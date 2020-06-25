@@ -1,0 +1,18 @@
+The following is a list of properties added to characters which are not part of the Unicode standard proper. Although the "proper" names are given here, they are, as usual, stored in the character's table in their normalized forms.
+
+Original_Name
+    Contains the character's original, non-normalized name. If Name=[[latinsmallq]], then Original_Name=[[LATIN SMALL LETTER Q]]
+
+Numeric_Canonical_Combining_Class
+    Contains the numeric version of the character's Canonical_Combining_Class. If this value would be 0, then it is replaced with nil instead.
+
+Rational_Numeric_Value
+    If the numeric value of a character is expressed as a rational number, it is presented here as a table with the keys "num" and "den" for the numerator and denominator, respectively.
+
+Numeric_Age
+    If a character has an assigned age, it will be represented here as a float value.
+
+Lowercase_Mapping_Condition
+Titlecase_Mapping_Condition
+Uppercase_Mapping_Condition
+    If relevant, has the name of the context function used to determine if the relevant full casemapping applies. The name of the context function is *not* normalized.

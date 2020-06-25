@@ -1,0 +1,440 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Unicode Services for Lua Documentation</title>
+        <!--<link rel="stylesheet" type="text/css" href="./lua.css"/>-->
+        <!--<link rel="stylesheet" type="text/css" href="./manual.css"/>-->
+        <style type="text/css">
+            html {
+                background-color: #F8F8F8 ;
+            }
+
+            body {
+                background-color: #FFFFFF ;
+                color: #000000 ;
+                font-family: Helvetica, Arial, sans-serif ;
+                text-align: justify ;
+                line-height: 1.25 ;
+                margin: 16px auto ;
+                padding: 32px ;
+                border: solid #ccc 1px ;
+                border-radius: 20px ;
+                max-width: 70em ;
+                width: 90% ;
+            }
+
+            h1, h2, h3, h4 {
+                color: #000080 ;
+                font-family: Verdana, Geneva, sans-serif ;
+                font-weight: normal ;
+                font-style: normal ;
+                text-align: left ;
+            }
+
+            h1 {
+                font-size: 28pt ;
+            }
+
+            h1 img {
+                vertical-align: text-bottom ;
+            }
+
+            h2:before {
+                content: "\2756" ;
+                padding-right: 0.5em ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            a:link {
+                color: #000080 ;
+            }
+
+            a:link:hover, a:visited:hover {
+                background-color: #D0D0FF ;
+                color: #000080 ;
+                border-radius: 4px ;
+            }
+
+            a:link:active, a:visited:active {
+                color: #FF0000 ;
+            }
+
+            div.menubar {
+                padding-bottom: 0.5em ;
+            }
+
+            p.menubar {
+                margin-left: 2.5em ;
+            }
+
+            .menubar a:hover  {
+                margin: -3px -3px -3px -3px ;
+                padding: 3px  3px  3px  3px ;
+                border-radius: 4px ;
+            }
+
+            :target {
+                background-color: #F0F0F0 ;
+                margin: -8px ;
+                padding: 8px ;
+                border-radius: 8px ;
+                outline: none ;
+            }
+
+            hr {
+                display: none ;
+            }
+
+            table hr {
+                background-color: #a0a0a0 ;
+                color: #a0a0a0 ;
+                border: 0 ;
+                height: 1px ;
+                display: block ;
+            }
+
+            .footer {
+                color: gray ;
+                font-size: x-small ;
+                text-transform: lowercase ;
+            }
+
+            input[type=text] {
+                border: solid #a0a0a0 2px ;
+                border-radius: 2em ;
+                background-image: url('images/search.png') ;
+                background-repeat: no-repeat ;
+                background-position: 4px center ;
+                padding-left: 20px ;
+                height: 2em ;
+            }
+
+            pre.session {
+                background-color: #F8F8F8 ;
+                padding: 1em ;
+                border-radius: 8px ;
+            }
+
+            table {
+                border: none ;
+                border-spacing: 0 ;
+                border-collapse: collapse ;
+            }
+
+            td {
+                padding: 0 ;
+                margin: 0 ;
+            }
+
+            td.gutter {
+                width: 4% ;
+            }
+
+            table.columns td {
+                vertical-align: top ;
+                padding-bottom: 1em ;
+                text-align: justify ;
+                line-height: 1.25 ;
+            }
+
+            table.book td {
+                vertical-align: top ;
+            }
+
+            table.book td.cover {
+                padding-right: 1em ;
+            }
+
+            table.book img {
+                border: solid #000080 1px ;
+            }
+
+            table.book span {
+                font-size: small ;
+                text-align: left ;
+                display: block ;
+                margin-top: 0.25em ;
+            }
+
+            p.logos a:link:hover, p.logos a:visited:hover {
+                background-color: inherit ;
+            }
+
+            img {
+                background-color: white ;
+            }
+
+            h3 code {
+                font-family: inherit ;
+                font-size: inherit ;
+            }
+
+            pre, code {
+                font-size: 12pt ;
+            }
+
+            span.apii {
+                color: gray ;
+                float: right ;
+                font-family: inherit ;
+                font-style: normal ;
+                font-size: small ;
+            }
+
+            h2:before {
+                content: "" ;
+                padding-right: 0em ;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>1 &ndash; Introduction</h1>
+        <p>
+            <em>Unicode Services for Lua</em> (shortened as <em>US4L</em>) is a Lua extension library that aims to provide complete support for the Unicode standard: not just text encoding and conversion, but access to all character properties, standard algorithms, and other functionality. Furthermore, the focus of this particular library is on user-friendliness first and foremost, as the Unicode standard is large and complex, and programmers will benefit from a low barrier to entry for using it.
+        </p>
+        <p>
+            An important element of this usability is that the primary type, the <b>UString</b>, can be used almost as a drop-in replacement for the normal Lua <em>string</em> type. It retains all the important semantics:
+            <ul>
+                <li>UStrings can be treated as by-value types: every identical UString is the same value, so they can be used as keys in tables or compared for equality with the function <b>rawequal</b>.</li>
+                <li>UStrings can be concatenated with other UStrings or regular strings to produce a UString.</li>
+                <li>The <b>__tostring</b> metamethod of a UString converts to a UTF-8 representation, which lets standard-library functions (such as <b>print</b>) interact with UStrings in mostly the same way as they do with regular strings.</li>
+            </ul>
+        </p>
+        <p>
+            Furthermore, <em>US4L</em> is compatible with all modern versions of Lua:
+            <ul>
+                <li>Lua <b>5.1</b>
+                    <ul>
+                        <li><b>LuaJIT</b> is supported with special optimizations.</li>
+                    </ul>
+                </li>
+                <li>Lua <b>5.2</b></li>
+                <li>Lua <b>5.3</b></li>
+            </ul>
+            <em>US4L</em> provides the same functionality in all versions, but individual optimizations are used with each version.
+        </p>
+        <p>
+            As a note, this library currently only targets Unicode 7.0, as that was the current version of Unicode when work on this library was first begun. When the library reaches complete functionality, it will then be upgarded to target the most current version of Unicode.
+        </p>
+        
+        <h1>2 &ndash; Basic Concepts</h1>
+        <p>
+            TODO: Need to outline this section later. Concepts to discuss: code points, encodings, code units, character properties.
+            <h2>2.? &ndash; Key Terminology</h2>
+            <p>
+                This is not attempting to provide exhaustively-correct definitions for these terms; those seeking more knowledge should consult the Unicodce Standard itself.
+            </p>
+            <dl>
+                <dt>Character</dt>
+                <dd><em>The smallest component of written language that has semantic value; refers to the abstract meaning and/or shape, rather than a specific shape.</em> A character is an abstract concept that exists independent of how it is <em>encoded</em> or <em>represented</em> on a computer system, and it generally has some meaning distinct from its shape; an example would be "Latin Capital Letter A".</dd>
+                
+                <dt>Glyph</dt>
+                <dd>A specific shape or symbol. There exist characters that don't have glyphs (such as control codes); there also exist single glyphs that are made up of more than one character (such as ligatures). A single character may have more than one glyph (TODO: Need example). A "glyph" is a concept that exists mostly in the realm of <em>fonts</em> rather than in <em>text processing</em>.</dd>
+                
+                <dt>Grapheme Cluster</dt>
+                <dd>
+                    What a user generally perceives of as a single "character" in a graphical sense, even though it may be made up of multiple Unicode characters. Examples:
+                    <ul>
+                        <li>"g&#x0308;" &mdash; This is made up of a sequence of characters U+0067 LATIN SMALL LETTER G, followed by U+0308 COMBINING DIARESIS.</li>
+                        <li>"&#x1100;&#x1161;&#x11a8;" &mdash; This is made up of a sequence of characters U+1100 HANGUL CHOSEONG KIYEOK, followed by U+1161 HANGUL JUNGSEONG A, followed by U+11A8 HANGUL JONGSEONG KIYEOK.</li>
+                    </ul>
+                </dd>
+                
+                <dt>Character Set</dt>
+                <dd>A list of all <em>Character</em>s that some specific computer system will handle. Unicode's character set strives to be a complete superset of all other computer character sets.</dd>
+                
+                <dt>Code Point</dt>
+                <dd>Within a <em>Character Set</em>, a unique number assigned to a <em>Character</em>. Unicode's Code Points span from 0x0000 to 0x10FFFF; though not all Code Points in this range are actually assigned specific Characters yet.</dd>
+                
+                <dt>Encoding</dt>
+                <dd>
+                    A systematic way of representing a sequence of <em>Code Point</em>s on a computer system. This encompasses several concepts:
+                    <dl>
+                        <dt>Code Unit</dt>
+                        <dd>
+                            <p>A complete unit of computer storage used in some method of encoding. A Code Point might require multiple Code Units to represent itself. Code Units might have some further method of sub-representation that can differ on various systems.</p>
+                            <p>As an example, the UTF-16 encoding uses 16-bit unsigned integers as its <em>Code Unit</em>; in the programming language C, these might be represented as <code>uint16_t</code> or <code>char16_t</code>.</p>
+                        </dd>
+                        
+                        <dt>Byte/Octet</dt>
+                        <dd>A <em>byte</em> is the smallest addressable unit of computer storage; an <em>octet</em> is the de-facto universal form of byte, which is a collection of eight bits. A <em>Code Unit</em> may be made up of multiple bytes, in which case there may be multiple ways of ordering those bytes; such as <em>Little-Endian</em> and <em>Big-Endian</em> forms, along with more exotic forms.</dd>
+                        
+                        <dt>Encoding Form</dt>
+                        <dd>A specific method of representing Code Points as a sequence of Code Units. The standard Unicode Encoding Forms are UTF-8, UTF-16, and UTF-32.</dd>
+                        
+                        <dt>Encoding Scheme</dt>
+                        <dd>A specific method of representing Code Points as a sequence of Bytes. Typically this is a combination of an <em>Encoding Form</em> with a method of representing a Code Unit as a sequence of Bytes. Some encoding forms already use bytes as their code units, such as UTF-8. For others, a typical Endian-ness is specified; consequently, the standard Unicode Encoding Schemes are UTF-8, UTF-16LE, UTF-16BE, UTF-32LE, and UTF-32BE.</dd>
+                    </dl>
+                </dd>
+                
+                <dt>Normalization Form</dt>
+                <dd>
+                    <p>
+                        In Unicode, there are frequently multiple possible sequences of Code Points that all encode text which an end-user can, and should, perceive as identical. <em>Normalizing</em> a Unicode string re-arranges and replaces characters according to a particular set of rules, such that any two striongs which an end-user <em>perceives</em> as identical, will become <em>actually</em> identical when they are both normalized in the same way.
+                    </p>
+                    <p>
+                        There are four normalization forms in Unicode: <b>NFD</b>, <b>NFC</b>, <b>NFKC</b>, and <b>NFKD</b>. The forms that end in "D" create the longest, easiest-to-process strings. The forms that end in "C" create the shortest, most compact strings. The forms that do not have "K" in the name keep strings as <em>completely</em> identical in perception, the forms that have "K" in the name perform a "compatibility" transformation that is useful for things like text-searching.
+                    </p>
+                    <p>
+                        For more information, consult <a href="https://www.unicode.org/reports/tr15/tr15-41.html">UAX #15: Unicode Normalization Forms</a>.
+                    </p>
+                </dd>
+            </dl>
+        </p>
+        
+        <h1>3 &ndash; Modules &amp; Functions</h1>
+        <p>This section describes all of the public modules that make up this library, and the functions contained within those.</p>
+            
+            <h2>3.1 &ndash; us4l</h2>
+            <p>
+                The <code>us4l</code> module contains the basic functionality that most users will use.
+            </p>
+            
+                <h3><code>U (&middot;&middot;&middot;)</code></h3>
+                <p>
+                    <p>Creates a <b>UString</b> based on the argument or arguments provided. The valid arguments are:</p>
+                    <ul>
+                        <li>If the argument is a <b>string</b>, it is treated as a UTF-8 string, <em>with</em> certain escape sequences being understood, and creating the corresponding <b>UString</b>. It is intended to be used with <em>long string literals</em>. The following escape sequences are understood:
+                            <ul>
+                                <li>All normal escape sequences understood by Lua 5.2 (e.g., <code>\n</code>, <code>\z</code>, <code>\x<em>XX</em></code>, etc.)</li>
+                                <li>Numeric escape sequences: <code>\u{<em>XXX</em>}</code>, where <code><em>XXX</em></code> is a sequence of one or more hexadecimal characters that specify a valid Unicode code point. Example:
+                                    <pre>local U = require("us4l").U
+print( U[[Ku\u{308}bi]] ) --> Kübi
+</pre>
+                                </li>
+                                <li>
+                                    <p>Character or sequence names: <code>\N{<em>name</em>}</code>, where <code><em>name</em></code> is the <em>name</em> of a Unicode character (e.g., "<em>LEFTWARDS WAVE ARROW</em>"), an <em>alias</em> for a Unicode character (e.g., "<em>END OF TRANSMISSION</em>"), or a <em>named sequence</em> (e.g., "<em>LATIN CAPITAL LETTER A WITH MACRON AND GRAVE</em>"). Example:</p>
+                                    <pre>local U = require("us4l").U
+print( U[[Ku\N{COMBINING DIARESIS}bi]] ) --> Kübi
+</pre>
+                                    <p>The standard soft-matching/name-equivalence rules are applied, so "<em>LATIN CAPITAL LETTER O</em>", "<em>Latin_Capital_Letter_O</em>", and "<em>latincapitalo</em>" are all valid and denote the same character.</p>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            (TODO: Not implemented yet) If the argument is a <b>table</b>, it is expected to be an array of <b>number</b>s, each one an integer corresponding to a valid Unicode code point. The resulting UString contains the characters corresponding to those code points. Example:
+                            <pre>local U = require("us4l").U
+local cps = { 0x4B, 0x75, 0x308, 0x62, 0x69 }
+print( U( cps ) ) --> Kübi
+</pre>
+                        </li>
+                        <li>
+                            (TODO: Not implemented yet) If one or more <b>number</b>s are passed as arguments, they are treated the same as if a single array of them were passed. Example:
+                            <pre>local U = require("us4l").U
+print( U( 0x4B, 0x75, 0x308, 0x62, 0x69 ) ) --> Kübi
+</pre>
+                        </li>
+                    </ul>
+                    <p>If you need to create a <b>UString</b> from a string containing UTF-8-encoded characters without wishing to interpret any escape sequences, use the function <code>UTF8.ToUString</code> from the module <code>us4l.Encodings</code>.</p>
+                </p>
+            
+            <h2>3.2 &ndash; us4l.Encodings</h2>
+            <p>
+                This module performs conversions between UStrings and binary representations of Unicode strings in their various encoding schemes.
+            </p>
+            <p>
+                The module contains five tables:
+                <ul>
+                    <li><code>UTF8</code></li>
+                    <li><code>UTF16LE</code></li>
+                    <li><code>UTF16BE</code></li>
+                    <li><code>UTF32LE</code></li>
+                    <li><code>UTF32BE</code></li>
+                </ul>
+                Each table contains two functions, which perform the same job in each of those tables:
+                
+                <h3>ToUString ( str )</h3>
+                <p>
+                    Takes in a binary string <code>str</code> in the appropriate encoding scheme, and returns a corresponding UString. In all encoding schemes, this function performs strict validation on <code>str</code> and will throw an error when given a mal-formed string.
+                </p>
+                
+                <h3>FromUString ( ustr )</h3>
+                <p>
+                    Takes in a UString <code>ustr</code> and returns a binary string in the appropriate encoding scheme. Where appropriate, it will throw an error if invalid code points are in <code>ustr</code>. This mainly comes up when one attempts to convert a UString containing isolated UTF-16 surrogate characters.
+                </p>
+            </p>
+            
+            <h2>3.3 &ndash; us4l.Normalize</h2>
+            <p>
+                This module performs the normalization of character names, property names, and property values that allow for <em>soft matching</em> as described in <a href="https://www.unicode.org/reports/tr44/tr44-14.html#Matching_Rules">UAX #44, section 5.9</a>. In general, if two values are equal when they are both normalized by the appropriate function, then the values are equivalent.
+            </p>
+                
+                <h3><code>CharacterName ( name )</code></h3>
+                <p>
+                    Performs normalization of character names. A contrived example of how it might be used:
+                    
+                    <pre>--Function checks if the third character of a string is "g"
+local Normalize = require "us4l.Normalize"
+local expected_name = Normalize.CharacterName( "LATIN SMALL LETTER G" )
+function IsThirdCharacterSmallG ( ustr )
+    return ustr[3].Name == expected_name
+end
+</pre>
+                    Note that this function does not resolve character aliases.
+                </p>
+                
+                <h3><code>PropertyName ( name )</code></h3>
+                <p>
+                    Normalizes character property names. All properties of UChars are stored under their normalized, alias-resolved names, so unless you know exactly what that normalized name is, then you must use this function to determine which key to use to look up a property. As an example, let's try to get the value of the property <code>Simpler_Uppercase_Mapping</code> for a lowercase 'g'; the property name has an alias <code>suc</code>:
+                    <pre>local U = require("us4l").U
+local Normalize = require "us4l.Normalize"
+s = U[[g]]
+print( s[1].Simple_Uppercase_Mapping ) --> nil
+print( s[1].suc ) --> nil
+
+foo = Normalize.PropertyName( "Simple_Uppercase_Mapping" )
+bar = Normalize.PropertyName( "suc" )
+
+print( s[1][ foo ] ) --> G
+print( s[1][ bar ] ) --> G
+</pre>
+                </p>
+                
+                <h3><code>PropertyValue ( propname, propval )</code></h3>
+                <p>
+                    Performs normalization of property values for properties of <em>Catalog</em>, <em>Enumeration</em>, or <em>Binary</em> type. TODO: Need a more extended discussion elsewhere of how property values are represented and a link to that section. Argument <code>propname</code> specifies the name of the property (it does not need to be in normalized form), and <code>propval</code> specifies a string value for that property.
+                </p>
+                <p>
+                    For <em>Catalog</em> and <em>Enumeration</em> types, the returned value is a string in normalized form. For <em>Binary</em> types, the various possible string values are all normalized to boolean values of <code><b>true</b></code> or <code><b>false</b></code>.
+                </p>
+        
+        <h1>4 &ndash; Types &amp; Methods</h1>
+            
+            <h2>4.1 &ndash; UString</h2>
+            <p>
+                TODO. Also, need to think about how to document the metamethods.
+            </p>
+                <h3>UString:toUtf8 ( )<br/>UString:toUtf16LE ( )<br/>UString:toUtf16BE ( )<br/>UString:toUtf32LE ( )<br/>UString:toUtf32BE ( )</h3>
+                <p>
+                    TODO (also, I think I need to rename these methods for better consistency)
+                </p>
+            
+                <h3>UString:ToLowercase ( )<br/>UString:ToUppercase ( )<br/>UString:ToTitlecase ( )</h3>
+                <p>
+                    TODO (also, looks like <code>UString:ToTitlecase()</code> hasn't been implemented yet?)
+                </p>
+                
+                <h3>UString:ToNFD ( )<br/>UString:ToNFKD ( )<br/>UString:ToNFC ( )<br/>UString:ToNFKC ( )</h3>
+                <p>
+                    TODO
+                </p>
+                
+                <h3>UString:PrettyPrint ( )</h3>
+                <p>
+                    TODO
+                </p>
+            
+            <h2>4.2 &ndash; UChar</h2>
+            <p>
+                TODO
+            </p>
+        
+        <h1>5 &ndash; Common Operations</h1>
+            <p>TODO. Shows example code to perform all sorts of common operations without having to understand Unicode very deeply.</p>
+        
+    </body>
+</html>
