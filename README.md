@@ -1,5 +1,5 @@
-# LuaUnicode3
-Unicode Services for Lua
+# Unicode Services for Lua
+Comprehensive Unicode library for Lua
 
 Project is still seriously in-progress; this readme will keep track of my list of what still needs to be implemented.
 
@@ -13,9 +13,9 @@ TODO:
 * Update Unicode support from 7.0 to the most recent version of Unicode
 * Update all PowerShell scripts to function correctly with `pwsh` on *nix systems
 * Implement all remaining standard Unicode algorithms:
-** Text Segmentation
-** Line Breaking
-** Bidirectional
+  * Text Segmentation
+  * Line Breaking
+  * Bidirectional
 * Implement some form of pattern matching or regular expression
-** Ideally, provide either pre-made patterns that can be used with LPeg or provide our own re-creation of LPeg for UStrings, or both.
+  * Ideally, provide either pre-made patterns that can be used with LPeg or provide our own re-creation of LPeg for UStrings, or both.
 * Implement file I/O library
