@@ -12,7 +12,7 @@ TODO:
 * Finish implementing addition of all remaining character properties to the Master Table
 * Update Unicode support from 7.0 to the most recent version of Unicode
 * Update all PowerShell scripts to function correctly with `pwsh` on *nix systems
-* Implement all remaining standard Unicode algorithms:
+* Implement all remaining standard Unicode algorithms: (plus other minor algorithms and operations)
   * Text Segmentation
   * Line Breaking
   * Bidirectional
