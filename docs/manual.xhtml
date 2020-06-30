@@ -371,7 +371,7 @@ print( U( 0x4B, 0x75, 0x308, 0x62, 0x69 ) ) --> Kübi
 local Normalize = require "us4l.Normalize"
 local expected_name = Normalize.CharacterName( "LATIN SMALL LETTER G" )
 function IsThirdCharacterSmallG ( ustr )
-    return ustr[3].Name == expected_name
+    return ustr[3].name == expected_name
 end
 </pre>
                     Note that this function does not resolve character aliases.
@@ -408,9 +408,9 @@ print( s[1][ bar ] ) --> G
             <p>
                 TODO. Also, need to think about how to document the metamethods.
             </p>
-                <h3>UString:toUtf8 ( )<br/>UString:toUtf16LE ( )<br/>UString:toUtf16BE ( )<br/>UString:toUtf32LE ( )<br/>UString:toUtf32BE ( )</h3>
+                <h3>UString:ToUtf8 ( )<br/>UString:ToUtf16LE ( )<br/>UString:ToUtf16BE ( )<br/>UString:ToUtf32LE ( )<br/>UString:ToUtf32BE ( )</h3>
                 <p>
-                    TODO (also, I think I need to rename these methods for better consistency)
+                    TODO
                 </p>
             
                 <h3>UString:ToLowercase ( )<br/>UString:ToUppercase ( )<br/>UString:ToTitlecase ( )</h3>
@@ -425,7 +425,47 @@ print( s[1][ bar ] ) --> G
                 
                 <h3>UString:PrettyPrint ( )</h3>
                 <p>
-                    TODO
+                    Useful for debugging and analysis. Outputs a multi-line string, with each string containing the code point and official name of each character in the string. For example:
+                    <p>
+                        <pre>print( U[[Ku\u{0308}bi]]:PrettyPrint() )</pre>
+                    </p>
+                    produces the output:
+                    <p>
+                        <pre>U+004B   LATIN CAPITAL LETTER K
+U+0075   LATIN SMALL LETTER U
+U+0308   COMBINING DIAERESIS
+U+0062   LATIN SMALL LETTER B
+U+0069   LATIN SMALL LETTER I</pre>
+                    </p>
+                </p>
+                
+                <h3>UString:byte ( [ i [, j] ] )</h3>
+                <p>
+                    Works exactly the same as the standard Lua <code>string.byte()</code> function. Returns the code points of the associated characters.
+                </p>
+                
+                <h3>UString:lower ( )</h3>
+                <p>
+                    Alias for <code>UString:ToLowercase()</code>, for compatibility with normal Lua strings.
+                </p>
+                
+                <h3>UString:rep ( n [, sep ] )</h3>
+                <p>
+                    Works exactly the same as the standard Lua <code>string.rep()</code> function. <code>sep</code> can be a string or a UString.
+                </p>
+                
+                <h3>UString:reverse ( )</h3>
+                <p>
+                    Works exactly the same as the standard Lua <code>string.reverse()</code> function. Note that this performs a dumb character-by-character reversal, ignoring Grapheme Clusters, so it may produce unexpected results:
+                    <p>
+                        <pre>print( U[[Kübi]]:reverse() ) --> ib&#x0308;uK</pre>
+                    </p>
+                    (If the above does not render correctly: the diaeresis (umlaut) would appear over the 'b' instead of over the 'u')
+                </p>
+                
+                <h3>UString:sub ( i [, j ] )</h3>
+                <p>
+                    Works exactly the same as the standard Lua <code>string.sub()</code> function.
                 </p>
             
             <h2>4.2 &ndash; UChar</h2>
