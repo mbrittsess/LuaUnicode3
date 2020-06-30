@@ -16,6 +16,30 @@ local Utf8ToCpList = Encodings.UTF8.DecodeWholeString
 local umeta = {}
 local ustr_methods = {}
 
+local GetEmptyUString
+do
+    local empty_ustr
+function GetEmptyUString ( )
+    if not empty_ustr then
+        empty_ustr = MakeUString{}
+    end
+    return empty_ustr
+end end
+
+local function isUString ( val )
+    return getmetatable( val ) == umeta
+end
+
+local function toUString ( val )
+    local val_type, val_isustr = type(val), isUString(val)
+    assert( val_type == "string" or isUstring, "argument must be string or UString" )
+    if val_type == "string" then
+        return MakeUString( Utf8ToCpList( val ) )
+    else
+        return val
+    end
+end
+
 local function toCpList ( val )
     if getmetatable( val ) == umeta then --UString
         local cp_list = {}
@@ -202,5 +226,170 @@ function ustr_methods:PrettyPrint ( )
     end
     return table.concat( out_buf, "\n" )
 end end
+
+--Standard Lua string library methods
+ustr_methods.lower = ustr_methods.ToLowercase
+ustr_methods.upper = ustr_methods.ToUppercase
+
+function ustr_methods:rep( n, sep )
+    local n_type, sep_type = type(n), type(sep)
+    
+    --Check that 'n' is valid
+    if n_type ~= "number" then
+        error( string.format( "bad argument #1 to 'rep' (number expected, got %s)", n_type ) )
+    elseif n % 1 ~= 0 then
+        error( "bad argument #1 to 'rep' (not an integer)" )
+    end
+    
+    --Check that 'sep' is nil or valid
+    if sep ~= nil and sep_type ~= "string" and not isUString( sep ) then
+        error( string.format( "bad argument #2 to 'rep' (string or UString expected, got %s)", sep_type ) )
+    end
+    
+    --If 'n' is less than 1, return empty string
+    if n < 1 then
+        return GetEmptyUString()
+    end
+    
+    local self_cpl = toCpList( self )
+    if sep == nil then
+        local ret_cpl = {}
+        for i = 0, n-1 do
+            local ins = #self_cpl * i
+            for j = 1, #self_cpl do
+                ret_cpl[ ins + j ] = self_cpl[ j ]
+            end
+        end
+        
+        return MakeUString( ret_cpl )
+    else
+        local ret_cpl = {}
+        local sep_cpl = toCpList( sep )
+        local use_sep = false
+        local ins = 0
+        for i = 0, n-1 do
+            if use_sep then
+                for j = 1, #sep_cpl do
+                    ret_cpl[ ins + j ] = sep_cpl[ j ]
+                end
+                ins = ins + #sep_cpl
+            end
+            
+            for j = 1, #self_cpl do
+                ret_cpl[ ins + j ] = self_cpl[ j ]
+            end
+            ins = ins + #self_cpl
+            
+            use_sep = true
+        end
+        
+        return MakeUString( ret_cpl )
+    end
+end
+
+function ustr_methods:reverse ( )
+    if #self <= 1 then
+        return self
+    else
+        local ret_cpl = toCpList( self )
+        for i = 1, math.floor( #self / 2 ) do
+            local j = (#self+1)-i
+            ret_cpl[i], ret_cpl[j] = ret_cpl[j], ret_cpl[i]
+        end
+        return MakeUString( ret_cpl )
+    end
+end
+
+function ustr_methods:sub ( i, j )
+    local type_i, type_j = type(i), type(j)
+    if type_i ~= "number" then
+        error( string.format( "bad argument #1 to 'sub' (number expected, got %s)", type_i ) )
+    elseif type_i == "number" and i % 1 ~= 0 then
+        error( "bad argument #1 to 'sub' (not an integer)" )
+    end
+    
+    if j ~= nil and type_j ~= "number" then
+        error( string.format( "bad argument #2 to 'sub' (number expected, got %s)", type_j ) )
+    elseif type_j == "number" and j %1 ~= 0 then
+        error( "bad argument #2 to 'sub' (not an integer)" )
+    end
+    
+    if j == nil then
+        j = -1
+    end
+    
+    --Convert and normalize indices
+    if i < 0 then
+        i = #self + i + 1
+    end
+    if i < 0 then
+        i = 1
+    end
+    
+    if j < 0 then
+        j = #self + j + 1
+    end
+    if j > #self then
+        j = #self
+    end
+    
+    if i < j then
+        local ret_cpl = {}
+        for idx = i, j do
+            ret_cpl[ #ret_cpl + 1 ] = self[ idx ].codepoint
+        end
+        return MakeUString( ret_cpl )
+    else
+        return GetEmptyUString()
+    end
+end
+
+function ustr_methods:byte ( i, j )
+    local type_i, type_j = type(i), type(j)
+    if i ~= nil and type_i ~= "number" then
+        error( string.format( "bad argument #1 to 'byte' (number expected, got %s)", type_i ) )
+    elseif type_i == "number" and i % 1 ~= 0 then
+        error( "bad argument #1 to 'byte' (not an integer)" )
+    end
+    
+    if i == nil then
+        i = 1
+    end
+    
+    if j ~= nil and type_j ~= "number" then
+        error( string.format( "bad argument #2 to 'byte' (number expected, got %s)", type_j ) )
+    elseif type_j == "number" and j %1 ~= 0 then
+        error( "bad argument #2 to 'byte' (not an integer)" )
+    end
+    
+    if j == nil then
+        j = -1
+    end
+    
+    --Convert and normalize indices
+    if i < 0 then
+        i = #self + i + 1
+    end
+    if i < 0 then
+        i = 1
+    end
+    
+    if j < 0 then
+        j = #self + j + 1
+    end
+    if j > #self then
+        j = #self
+    end
+    
+    if i < j then
+        local ret_cpl = {}
+        for idx = i, j do
+            ret_cpl[ #ret_cpl + 1 ] = self[ idx ].codepoint
+        end
+        return table.unpack( ret_cpl )
+    else
+        return
+    end
+end
 
 return umeta

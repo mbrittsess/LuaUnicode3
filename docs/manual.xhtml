@@ -239,7 +239,7 @@
                 <dd>
                     What a user generally perceives of as a single "character" in a graphical sense, even though it may be made up of multiple Unicode characters. Examples:
                     <ul>
-                        <li>"g&#x0308;" &mdash; This is made up of a sequence of characters U+0067 LATIN SMALL LETTER G, followed by U+0308 COMBINING DIARESIS.</li>
+                        <li>"g&#x0308;" &mdash; This is made up of a sequence of characters U+0067 LATIN SMALL LETTER G, followed by U+0308 COMBINING DIAERESIS.</li>
                         <li>"&#x1100;&#x1161;&#x11a8;" &mdash; This is made up of a sequence of characters U+1100 HANGUL CHOSEONG KIYEOK, followed by U+1161 HANGUL JUNGSEONG A, followed by U+11A8 HANGUL JONGSEONG KIYEOK.</li>
                     </ul>
                 </dd>
@@ -309,7 +309,7 @@ print( U[[Ku\u{308}bi]] ) --> Kübi
                                 <li>
                                     <p>Character or sequence names: <code>\N{<em>name</em>}</code>, where <code><em>name</em></code> is the <em>name</em> of a Unicode character (e.g., "<em>LEFTWARDS WAVE ARROW</em>"), an <em>alias</em> for a Unicode character (e.g., "<em>END OF TRANSMISSION</em>"), or a <em>named sequence</em> (e.g., "<em>LATIN CAPITAL LETTER A WITH MACRON AND GRAVE</em>"). Example:</p>
                                     <pre>local U = require("us4l").U
-print( U[[Ku\N{COMBINING DIARESIS}bi]] ) --> Kübi
+print( U[[Ku\N{COMBINING DIAERESIS}bi]] ) --> Kübi
 </pre>
                                     <p>The standard soft-matching/name-equivalence rules are applied, so "<em>LATIN CAPITAL LETTER O</em>", "<em>Latin_Capital_Letter_O</em>", and "<em>latincapitalo</em>" are all valid and denote the same character.</p>
                                 </li>
