@@ -67,7 +67,7 @@ end
 
 --[[    __tostring metamethod]]
 function umeta.__tostring ( ustr )
-    return ustr:toUtf8()
+    return ustr:ToUtf8()
 end
 
 --[[    __lt metamethod
@@ -107,7 +107,7 @@ local names = { UTF8 = "Utf8", UTF16LE = "Utf16LE", UTF16BE = "Utf16BE", UTF32LE
 for encname, methname in pairs( names ) do
     local ConvFunc = Encodings[ encname ].EncodeCpList
     local cache_key = "_" .. methname:lower()
-    ustr_methods[ "to" .. methname ] = function ( self )
+    ustr_methods[ "To" .. methname ] = function ( self )
         local out = self[ cache_key ]
         if not out then
             local cp_list = toCpList( self )
