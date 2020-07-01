@@ -7,24 +7,36 @@ $CompilerParameters.Referencedassemblies.AddRange( @(
     'System.Core.dll'
 ) )
 
-$CodeProvider = New-Object Microsoft.CSharp.CSharpCodeProvider <# (
-    & { $P = New-Object 'System.Collections.Generic.Dictionary[String,String]'
-        $P.Add( "CompilerVersion", "v3.5" )
-        $P | Write-Output
+Function TryCompile ( [Microsoft.CSharp.CSharpCodeProvider]$CodeProvider )
+{
+    $CompilerResults = $CodeProvider.CompileAssemblyFromFile(
+        $CompilerParameters,
+        [String[]]@( Resolve-Path "$Pwd\*.cs" )
+    )
+    If ( $CompilerResults.Errors.Count -gt 0 )
+    {
+        $CompilerResults.Errors | Write-Error
     }
-) #>
+}
+
+$CodeProvider = New-Object Microsoft.CSharp.CSharpCodeProvider
 
 $Files = Resolve-Path "$Pwd\*.cs"
 #TODO: Debug/Verbose Output
 
-$CompilerResults = $CodeProvider.CompileAssemblyFromFile(
-    $CompilerParameters,
-    [String[]]@( Resolve-Path "$Pwd\*.cs" )
-)
-
-If ( $CompilerResults.Errors.Count -gt 0 )
+Try
 {
-    $CompilerResults.Errors | Write-Error
+    TryCompile $CodeProvider
+}
+Catch
+{
+    $CodeProvider = New-Object Microsoft.CSharp.CSharpCodeProvider (
+        & { $P = New-Object 'System.Collections.Generic.Dictionary[String,String]'
+            $P.Add( "CompilerVersion", "v3.5" )
+            $P | Write-Output
+        }
+    )
+    TryCompile $CodeProvider
 }
 
 Export-ModuleMember #Nothing is exported
