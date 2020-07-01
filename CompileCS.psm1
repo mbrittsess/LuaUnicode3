@@ -7,12 +7,12 @@ $CompilerParameters.Referencedassemblies.AddRange( @(
     'System.Core.dll'
 ) )
 
-$CodeProvider = New-Object Microsoft.CSharp.CSharpCodeProvider (
+$CodeProvider = New-Object Microsoft.CSharp.CSharpCodeProvider <# (
     & { $P = New-Object 'System.Collections.Generic.Dictionary[String,String]'
         $P.Add( "CompilerVersion", "v3.5" )
         $P | Write-Output
     }
-)
+) #>
 
 $Files = Resolve-Path "$Pwd\*.cs"
 #TODO: Debug/Verbose Output
