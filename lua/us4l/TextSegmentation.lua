@@ -180,6 +180,7 @@ function export.GetGraphemeCluster ( ustr, sidx )
     return ustr:sub(sidx,sidx), sidx+1
 end end
 
+--Iterator function
 function export.GraphemeClusters ( ustr )
     local nidx = 1
     return function ( )

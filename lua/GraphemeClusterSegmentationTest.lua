@@ -1,6 +1,6 @@
 U = require("us4l").U
 UTF8 = require("us4l.Encodings").UTF8
-TS = require "us4l.TextSegmentation"
+TS = require "us4l.TextSegmentation2"
 
 local mul_sign, div_sign = U[[\N{MULTIPLICATION SIGN}]]:ToUtf8(), U[[\N{DIVISION_SIGN}]]:ToUtf8()
 
