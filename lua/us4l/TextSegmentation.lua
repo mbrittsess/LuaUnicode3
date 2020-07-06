@@ -15,7 +15,7 @@ end
 
 local export = {}
 
---do
+do
     local Control, CR, Extend, L, LF, LV, LVT, Prepend, Regional_Indicator, SpacingMark, T, V =
     (function( arg )
         for i,v in ipairs(arg) do
@@ -118,7 +118,7 @@ function export.GetGraphemeCluster ( ustr, sidx )
             error "can't happen"
         end
     end
-end --end
+end end
 
 --Iterator function
 function export.GraphemeClusters ( ustr )
