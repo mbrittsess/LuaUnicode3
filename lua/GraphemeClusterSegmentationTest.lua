@@ -1,12 +1,13 @@
 U = require("us4l").U
 UTF8 = require("us4l.Encodings").UTF8
+TS = require "us4l.TextSegmentation"
 
 local mul_sign, div_sign = U[[\N{MULTIPLICATION SIGN}]]:ToUtf8(), U[[\N{DIVISION_SIGN}]]:ToUtf8()
 
 local line_num = 0
 for line in io.lines( [[..\UCD\auxiliary\GraphemeBreakTest.txt]] ) do
     line_num = line_num + 1
-    
+
     --Discard comment-only lines
     if not(#line == 0 or line:sub(1,1) == "#") then
         repeat
@@ -17,7 +18,7 @@ for line in io.lines( [[..\UCD\auxiliary\GraphemeBreakTest.txt]] ) do
             end
             local succ, in_line = pcall( U, line_cps )
             if not succ then break end
-            
+
             local seqs = {}
             local cur_str_cps = {}
             for token in line:gmatch("%S+") do
@@ -30,13 +31,33 @@ for line in io.lines( [[..\UCD\auxiliary\GraphemeBreakTest.txt]] ) do
                     cur_str_cps[ #cur_str_cps + 1 ] = tonumber( token, 16 )
                 end
             end
-            local seqs_str = {}
-            for i,seq in ipairs(seqs) do
-                seqs_str[i] = '"' .. seqs[i]:ToUtf8() .. '"'
+
+            local out_seqs = {}
+            for gc in TS.GraphemeClusters( in_line ) do
+                out_seqs[ #out_seqs+1 ] = gc
             end
-            local seq_str = table.concat( seqs_str, ", " )
-            
-            print( string.format( 'Test for line #%i:\nExpected in-string:\n    %q\nExpected out-string:\n    %s\n', line_num, in_line:ToUtf8(), seq_str ) )
+
+            for i = 1, math.max( #seqs, #out_seqs ) do
+                if seqs[i] ~= out_seqs[i] then
+                    print( ("="):rep(10) )
+                    print( string.format( "Failed test from line #%i:", line_num ) )
+                    print( "  Input string:" )
+                    print( "      " .. in_line:PrettyPrint():gsub( "\n", "\n      " ) )
+                    print( "  Expected clusters:" )
+                    for i,str in ipairs( seqs ) do
+                        print( string.format( "    Grapheme Cluster #%i:", i ) )
+                        print( "      " .. str:PrettyPrint():gsub( "\n", "\n      " ) )
+                    end
+                    print( "  Output clusters:" )
+                    for i,str in ipairs( out_seqs ) do
+                        print( string.format( "    Grapheme Cluster #%i:", i ) )
+                        print( "      " .. str:PrettyPrint():gsub( "\n", "\n      " ) )
+                    end
+                    print( ("="):rep(10) )
+                    print()
+                    break
+                end
+            end
         until true
     end
 end
