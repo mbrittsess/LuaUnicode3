@@ -198,6 +198,28 @@ for _, CaseName in ipairs{ "Lowercase", "Uppercase" } do
     end
 end end
 
+function ustr_methods:ToCasefold ( )
+    if #self == 0 then
+        return self
+    end
+    
+    local cp_list = {}
+    for i = 1, #self do
+        local char = self[i]
+        local cf = char.casefolding or char.simplecasefolding
+        local ins = #cp_list
+        if cf then
+            for j = 1, #cf do
+                cp_list[ ins+j ] = cf[j].codepoint
+            end
+        else
+            cp_list[ ins+1 ] = char.codepoint
+        end
+    end
+    
+    return MakeUString( cp_list )
+end
+
 --Normalization Methods
 --TODO: Need to implement caching of results
 local Norm = require "us4l.internals.Normalization"
