@@ -117,8 +117,21 @@ do
         return MakeUString( cp_list )
     end end
     
+    local function errorf( fmt, ... )
+        return error( "Error calling us4l.U(): " .. fmt:format( ... ), 4 )
+    end
     local function MakeUStringFromCpList( cp_list )
-        error "not implemented yet"
+        for i = 1, #cp_list do
+            local cp = cp_list[i]
+            if     type(cp) ~= "number" then
+                errorf( "character #%i is a '%s', number expected", i, type(cp) )
+            elseif cp % 1 ~= 0 then
+                errorf( "character #%i is '%f', integer expected", i, cp )
+            elseif cp < 0x0000 or 0x10FFFF < cp then
+                errorf( "character #%i is '0x%X', not in range 0x0000..0x10FFFF", i, cp )
+            end
+        end
+        return MakeUString( cp_list )
     end
 function export.U( ... )
     local n_arg = select( '#', ... )
