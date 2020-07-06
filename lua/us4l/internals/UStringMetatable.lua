@@ -211,6 +211,9 @@ do
     local fmt = string.format
 function ustr_methods:PrettyPrint ( )
     local out_buf = {}
+    if #self == 0 then
+        return "(empty string)"
+    end
     for i = 1, #self do
         local char_i = self[i]
         local cp_printed = fmt( "U+%04X", char_i.codepoint )
@@ -333,7 +336,7 @@ function ustr_methods:sub ( i, j )
         j = #self
     end
     
-    if i < j then
+    if i <= j then
         local ret_cpl = {}
         for idx = i, j do
             ret_cpl[ #ret_cpl + 1 ] = self[ idx ].codepoint
