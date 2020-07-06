@@ -68,7 +68,13 @@ local function NewUString ( cp_list, sub_tbl )
     local new_str = {}
     local mct = MasterCharacterTable or GetMasterCharacterTable()
     for idx = 1, #cp_list do
-        new_str[ idx ] = mct[ cp_list[ idx ] ]
+        local cp = cp_list[ idx ]
+        local char = mct[ cp ]
+        --TEMP
+        if not char then
+            error( string.format( "Error making UString with character #%i with code point U+%04X: no such character", idx, cp ) )
+        end
+        new_str[ idx ] = char
     end
     new_str._SubTable = sub_tbl
     return setmetatable( new_str, UStringMetatable or GetUStringMetatable() )
