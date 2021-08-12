@@ -1,6 +1,6 @@
 U = require("us4l").U
 UTF8 = require("us4l.Encodings").UTF8
-TS = require "us4l.TextSegmentation2"
+TS = require "us4l.TextSegmentation"
 
 local mul_sign, div_sign = U[[\N{MULTIPLICATION SIGN}]]:ToUtf8(), U[[\N{DIVISION_SIGN}]]:ToUtf8()
 
@@ -17,7 +17,10 @@ for line in io.lines( [[..\UCD\auxiliary\GraphemeBreakTest.txt]] ) do
                 line_cps[ #line_cps + 1 ] = tonumber( cp_str, 16 )
             end
             local succ, in_line = pcall( U, line_cps )
-            if not succ then break end
+            if not succ then 
+                print( "Failed to create string on line " .. tostring(line_num) )
+                break
+            end
 
             local seqs = {}
             local cur_str_cps = {}
