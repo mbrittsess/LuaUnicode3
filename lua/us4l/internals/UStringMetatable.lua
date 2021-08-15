@@ -198,6 +198,98 @@ for _, CaseName in ipairs{ "Lowercase", "Uppercase" } do
     end
 end end
 
+--This method doesn't need to be especially performant, it's used very rarely
+do
+    local GetWord, MakeUString
+    local function init ( )
+        GetWord = require("us4l.TextSegmentation").GetWord
+        MakeUString = require "us4l.internals.MakeUString"
+        init = function ( ) end
+    end
+    local context_functions = require "us4l.internals.CasingContexts"
+function ustr_methods:ToTitlecase ( )
+    init()
+    
+    local function IsCased( ch )
+        return ch.lowercase == true or ch.uppercase == true or ch.generalcategory == [[titlecaseletter]]
+    end
+    
+    local cp_list = {}
+    local function add_cp( cp ) cp_list[ #cp_list+1 ] = cp end
+    
+    local sidx = 1
+    while sidx < #self do
+        local _, nidx = GetWord( self, sidx )
+        local cased_found = false
+        
+        for idx = sidx, nidx-1 do
+            local ch = self[idx]
+            if not ch.cased then
+                add_cp( ch.codepoint )
+            else
+                if not cased_found then --First cased character in this word
+                    cased_found = true
+                    local mapping = ch.titlecasemapping or ch.simpletitlecasemapping
+                    --Note that there are no conditional titlecase mappings
+                    if mapping then
+                        for i = 1, #mapping do add_cp( mapping[i].codepoint ) end
+                    else --Needs to be uppercased
+                        local full_mapping = ch.uppercasemapping
+                        if full_mapping then
+                            local condition = ch.uppercasemappingcondition
+                            if not condition or context_functions[ condition ]( self, idx ) then
+                                for i = 1, #full_mapping do add_cp( full_mapping[i].codepoint ) end
+                            else
+                                local simple_mapping = ch.simpleuppercasemapping
+                                if simple_mapping then
+                                    add_cp( simple_mapping[1].codepoint )
+                                else
+                                    add_cp( ch.codepoint )
+                                end
+                            end
+                        else
+                            local simple_mapping = ch.simpleuppercasemapping
+                            if simple_mapping then
+                                add_cp( simple_mapping[1].codepoint )
+                            else
+                                add_cp( ch.codepoint )
+                            end
+                        end
+                    end
+                else --After first cased character, must be lowercased
+                    local full_mapping = ch.lowercasemapping
+                    if full_mapping then
+                        local condition = ch.lowercasemappingcondition
+                        if not condition or context_functions[ condition ]( self, idx ) then
+                            for i = 1, #full_mapping do
+                                add_cp( full_mapping[i].codepoint )
+                            end
+                        else
+                            local simple_mapping = ch.simplelowercasemapping
+                            if simple_mapping then
+                                add_cp( simple_mapping[i].codepoint )
+                            else
+                                add_cp( ch.codepoint )
+                            end
+                        end
+                    else
+                        local simple_mapping = ch.simplelowercasemapping
+                        if simple_mapping then
+                            add_cp( simple_mapping[1].codepoint )
+                        else
+                            add_cp( ch.codepoint )
+                        end
+                    end
+                end
+            end
+        end
+        
+        sidx = nidx
+    end
+    
+    return MakeUString( cp_list )
+end end
+
 function ustr_methods:ToCasefold ( )
     if #self == 0 then
         return self
