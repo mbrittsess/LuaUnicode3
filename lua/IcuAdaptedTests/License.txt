@@ -1,0 +1,4 @@
+The tests in this folder are adapted from tests created for the ICU (International Components for Unicode) library, and the associated
+license may be found in this folder under the name "OriginalLicense.txt".
+
+No other parts of ICU have been used in the creation of Unicode Services for Lua.

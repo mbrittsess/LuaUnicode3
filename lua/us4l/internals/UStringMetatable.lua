@@ -218,7 +218,7 @@ function ustr_methods:ToTitlecase ( )
     local function add_cp( cp ) cp_list[ #cp_list+1 ] = cp end
     
     local sidx = 1
-    while sidx < #self do
+    while sidx <= #self do
         local _, nidx = GetWord( self, sidx )
         local cased_found = false
         
