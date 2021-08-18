@@ -133,7 +133,7 @@ do
         end
         return MakeUString( cp_list )
     end
-function export.U( ... )
+function export.U ( ... )
     local n_arg = select( '#', ... )
     if n_arg == 1 then
         local arg = (...)
@@ -152,6 +152,22 @@ function export.U( ... )
         end
     else
         return MakeUStringFromCpList{ ... }
+    end
+end end
+
+--TODO: This will need to be updated after we implement support for string proxies
+do
+    local meta = nil
+    local getmetatable = getmetatable
+    local function GetMetatable ( )
+        meta = require "us4l.internals.UStringMetatable"
+        return meta
+    end
+function export.type ( obj )
+    if getmetatable( obj ) == (meta or GetMetatable()) then
+        return "UString"
+    else
+        return nil
     end
 end end
 

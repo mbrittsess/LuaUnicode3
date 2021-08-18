@@ -331,6 +331,9 @@ print( U( 0x4B, 0x75, 0x308, 0x62, 0x69 ) ) --> Kübi
                     </ul>
                     <p>If you need to create a <b>UString</b> from a string containing UTF-8-encoded characters without wishing to interpret any escape sequences, use the function <code>UTF8.ToUString</code> from the module <code>us4l.Encodings</code>.</p>
                 </p>
+                
+                <h3><code>type ( obj )</code></h3>
+                <p>Checks whether <code>obj</code> is a <b>UString</b>. Returns the string <code>"UString"</code> if <code>obj</code> is a UString, or <b>nil</b> otherwise.</p>
             
             <h2>3.2 &ndash; us4l.Encodings</h2>
             <p>
