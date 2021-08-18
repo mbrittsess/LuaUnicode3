@@ -2,6 +2,8 @@ local InitFuncs = require "us4l.internals.MasterTable.InitFunctions"
 
 local UCharInit = InitFuncs.UCharInit
 
+UCharInit{ codepoint = 0x1F86F; name = "wideheadedsouthwestbarbarrow"; numericcanonicalcombiningclass = 0; originalname = "WIDE-HEADED SOUTH WEST BARB ARROW"; numericage = 7; generalcategory = [[othersymbol]]; graphemebase = true; age = [[v70]]; }
+UCharInit{ codepoint = 0x1F870; name = "wideheadedleftwardsmediumbarbarrow"; numericcanonicalcombiningclass = 0; originalname = "WIDE-HEADED LEFTWARDS MEDIUM BARB ARROW"; numericage = 7; generalcategory = [[othersymbol]]; graphemebase = true; age = [[v70]]; }
 UCharInit{ codepoint = 0x1F871; name = "wideheadedupwardsmediumbarbarrow"; numericcanonicalcombiningclass = 0; originalname = "WIDE-HEADED UPWARDS MEDIUM BARB ARROW"; numericage = 7; generalcategory = [[othersymbol]]; graphemebase = true; age = [[v70]]; }
 UCharInit{ codepoint = 0x1F872; name = "wideheadedrightwardsmediumbarbarrow"; numericcanonicalcombiningclass = 0; originalname = "WIDE-HEADED RIGHTWARDS MEDIUM BARB ARROW"; numericage = 7; generalcategory = [[othersymbol]]; graphemebase = true; age = [[v70]]; }
 UCharInit{ codepoint = 0x1F873; name = "wideheadeddownwardsmediumbarbarrow"; numericcanonicalcombiningclass = 0; originalname = "WIDE-HEADED DOWNWARDS MEDIUM BARB ARROW"; numericage = 7; generalcategory = [[othersymbol]]; graphemebase = true; age = [[v70]]; }
