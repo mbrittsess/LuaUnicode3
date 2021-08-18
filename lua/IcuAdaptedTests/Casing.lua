@@ -3,27 +3,26 @@ local TestCases = {
     { 
         Conversion = "Lowercase";
         { U[[ tHe QUIcK bRoWn]], U[[ the quick brown]] };
-        --{ U[[aBI\u{3A3}\u{DF}\u{3A3}/\u{5FFFF}\u{10405}]], U[[abi\u{3C3}\u{DF}\u{3C2}/\u{5FFFF}\u{1042D}]] };
+        --{ U[[aBI\u{3A3}\u{DF}\u{3A3}/\u{5FFFF}\u{10405}]], U[[abi\u{3C3}\u{DF}\u{3C2}/\u{5FFFF}\u{1042D}]] }; --TODO: Need support for unassigned characters
     };
     {
         Conversion = "Uppercase";
         { U[[ tHe QUIcK bRoWn]], U[[ THE QUICK BROWN]] };
-        --{ U[[aBi\u{3C3}\u{DF}\u{3C2}/\u{FB03}\u{5FFFF}\u{1042D}]], U[[ABI\u{3A3}SS\u{3A3}/FFI\u{5FFFF}\u{10405}]] };
+        --{ U[[aBi\u{3C3}\u{DF}\u{3C2}/\u{FB03}\u{5FFFF}\u{1042D}]], U[[ABI\u{3A3}SS\u{3A3}/FFI\u{5FFFF}\u{10405}]] }; --TODO: Need support for unassigned characters
     };
     {
         Conversion = "Titlecase";
         { U[[\u{2BB}aMeLikA huI P\u{16B} \u{2BB}\u{2BB}\u{2BB}iA]], U[[\u{2BB}Amelika Hui P\u{16B} \u{2BB}\u{2BB}\u{2BB}Ia]] };
         { U[[ tHe QUIcK bRoWn]], U[[ The Quick Brown]] };
-        { U[[\u{1C4}\u{1C5}\u{1C6}\u{1C7}\u{1C8}\u{1C9}\u{1CA}\u{1CB}\u{1CC}]], U[[\u{1C5}\u{1C5}\u{1C5}\u{1C8}\u{1C8}\u{1C8}\u{1CB}\u{1CB}\u{1CB}]] };
         { U[[\u{1C9}ubav ljubav]], U[[\u{1C8}ubav Ljubav]] };
         { U[[ijssel igloo IJMUIDEN]], U[[Ijssel Igloo Ijmuiden]] };
         { U[['oH dOn'T tItLeCaSe AfTeR lEtTeR+']], U[['Oh Don't Titlecase After Letter+']] };
-        { U[[a ʻCaT. A ʻdOg! ʻeTc.]], U[[A ʻCat. A ʻDog! ʻEtc.]] };
+        { U[[a \u{2BB}CaT. A \u{2BB}dOg! \u{2BB}eTc.]], U[[A \u{2BB}Cat. A \u{2BB}Dog! \u{2BB}Etc.]] };
     };
     --[=[
     {
         Conversion = "Casefold";
-        --{ U[[aB\u{130}I\u{131}\u{3D0}\u{DF}\u{FB03}\u{5FFFF}]], U[[abi\u{307}i\u{131}\u{3B2}ssffi\u{5FFFF}]] };
+        --{ U[[aB\u{130}I\u{131}\u{3D0}\u{DF}\u{FB03}\u{5FFFF}]], U[[abi\u{307}i\u{131}\u{3B2}ssffi\u{5FFFF}]] }; --TODO: Need support for unassigned characters
     };
     --]=]
 }
