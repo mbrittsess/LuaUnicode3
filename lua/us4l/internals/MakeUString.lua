@@ -47,7 +47,7 @@ end
 --Delay-load functionality for UString metatable
 local UStringMetatable
 local function GetUStringMetatable ( )
-    UStringMetatable = require "us4l.internals.UStringMetaTable"
+    UStringMetatable = require "us4l.internals.UStringMetatable"
     return UStringMetatable
 end
 
