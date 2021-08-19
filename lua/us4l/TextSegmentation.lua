@@ -1,10 +1,10 @@
 --TODO: Verify all other modules are loaded in correct order
 
 local Normalize = require "us4l.Normalize"
-local U = require("us4l").U
 
 local gcb = Normalize.PropertyName( "Grapheme_Cluster_Break" )
 local wb = Normalize.PropertyName( "Word_Break" )
+local sb = Normalize.PropertyName( "Sentence_Break" )
 
 local function MakeTrueSet ( arg )
     local ret = {}
@@ -137,7 +137,7 @@ do
         Numeric, Katakana, ExtendNumLet, Regional_Indicator, MidNum =
     (function( arg )
         for i,v in ipairs(arg) do
-            arg[i] = Normalize.PropertyValue( gcb, v )
+            arg[i] = Normalize.PropertyValue( wb, v )
         end
         return (table.unpack or unpack)( arg )
     end){ "CR", "LF", "Newline", "Extend", "Format", "ALetter", "Hebrew_Letter", "MidLetter", "MidNumLet", "Single_Quote", "Double_Quote",
@@ -311,6 +311,150 @@ function export.Words ( ustr )
     local sidx = 1
     return function ( )
         local ret_str, nidx = export.GetWord( ustr, sidx )
+        sidx = nidx
+        return ret_str
+    end
+end
+
+--Assumes sidx specifies start of a sentence, returns sentence and index of the first character after it
+do
+    local ATerm, Close, CR, Extend, Format, OLetter, LF, Lower, Numeric, SContinue, Sep, Sp, STerm, Upper, Other =
+    (function( arg )
+        for i,v in ipairs(arg) do
+            arg[i] = Normalize.PropertyValue( sb, v )
+        end
+        return (table.unpack or unpack)( arg )
+    end){ "ATerm", "Close", "CR", "Extend", "Format", "OLetter", "LF", "Lower", "Numeric", "SContinue", "Sep", "Sp", "STerm", "Upper",
+        "Other" }
+    
+    local SB4Set = MakeTrueSet{ Sep, CR, LF }
+    local SB5Set = MakeTrueSet{ Extend, Format }
+    local CloseContinueSet = MakeTrueSet{ Extend, Format, Close }
+    local SpContinueSet = MakeTrueSet{ Extend, Format, Sp }
+    local SB8Set = MakeTrueSet{ OLetter, Upper, Lower, Sep, CR, LF, STerm, ATerm }
+    local SB8a_1Set = MakeTrueSet{ STerm, ATerm }
+    local SB8a_2Set = MakeTrueSet{ SContinue, STerm, ATerm }
+    local SB9_1Set = SB8a_1Set
+    local SB9_2Set = MakeTrueSet{ Close, Sp, Sep, CR, LF }
+    local SB10_1Set = SB8a_1Set
+    local SB10_2Set = MakeTrueSet{ Sp, Sep, CR, LF }
+    local SB11_1Set = SB8a_1Set
+    local SB11_2Set = SB4Set
+function export.GetSentence ( ustr, sidx )
+    if sidx > #ustr then return nil, #ustr+1 end
+    
+    local function GetNextChar ( idx )
+        local ret_char = ustr[idx+1]
+        if ret_char ~= nil then
+            return idx+1, ret_char[sb]
+        else
+            return nil, nil
+        end
+    end
+    
+    local cidx = sidx
+    while true do
+        local cur_sb = ustr[cidx][ sb ]
+        local nidx, next_sb = GetNextChar( cidx )
+        
+        --Rule SB2
+        if not nidx then
+            return ustr:sub( sidx, -1 ), #ustr+1
+        end
+        
+        --Rule SB3 and SB4
+        if cur_sb == CR and next_sb == LF then
+            return ustr:sub( sidx, nidx ), nidx+1
+        elseif SB4Set[ cur_sb ] then
+            return ustr:sub( sidx, cidx ), nidx
+        end
+        
+        repeat
+            --Rule SB6
+            if cur_sb == ATerm then
+                local nidx, next_sb = nidx, next_sb --Must make duplicates
+                while next_sb ~= nil and SB5Set[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                if next_sb == Numeric then
+                    cidx = nidx
+                    break
+                end
+            end
+            
+            --Rule SB7
+            if cur_sb == Upper then
+                local nidx, next_sb = nidx, next_sb --Must make duplicates
+                while next_sb ~= nil and SB5Set[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                if next_sb == ATerm then
+                    nidx, next_sb = GetNextChar( nidx )
+                    while next_sb ~= nil and SB5Set[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                    if next_sb == Upper then
+                        cidx = nidx
+                        break
+                    end
+                end
+            end
+            
+            --Rule SB8
+            if cur_sb == ATerm then
+                local nidx, next_sb = nidx, next_sb --Must make duplicates
+                while next_sb ~= nil and CloseContinueSet[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                while next_sb ~= nil and SpContinueSet[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                local nnidx, next_next_sb = nidx, next_sb
+                while next_next_sb ~= nil and not SB8Set[ next_next_sb ] do nnidx, next_next_sb = GetNextChar( nnidx ) end
+                if next_next_sb == Lower then
+                    cidx = nidx
+                    break
+                end
+            end
+            
+            --Rule SB8a
+            if SB8a_1Set[ cur_sb ] then
+                local nidx, next_sb = nidx, next_sb --Must make duplicates
+                while next_sb ~= nil and CloseContinueSet[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                while next_sb ~= nil and SpContinueSet[ next_sb ] do nidx, next_sb = GetNextChar( nidx ) end
+                if SB8a_2Set[ next_sb ] then
+                    cidx = nidx
+                    break
+                end
+            end
+            
+            --I believe rules SB9 and SB10 are redundant with the way SB11 is specified
+            
+            --Rule SB11
+            if SB11_1Set[ cur_sb ] then
+                local eidx = cidx
+                local nidx, next_sb = nidx, next_sb --Must make duplicates
+                while next_sb ~= nil and CloseContinueSet[ next_sb ] do
+                    eidx = nidx
+                    nidx, next_sb = GetNextChar( nidx )
+                end
+                while next_sb ~= nil and SpContinueSet[ next_sb ] do
+                    eidx = nidx
+                    nidx, next_sb = GetNextChar( nidx )
+                end
+                if SB11_2Set[ next_sb ] then
+                    eidx = nidx
+                    if next_sb == CR then
+                        local next_next_char = ustr[nidx+1]
+                        if next_next_char ~= nil and next_next_char[ sb ] == LF then
+                            eidx = nidx+1
+                        end
+                    end
+                end
+                
+                return ustr:sub( sidx, eidx ), eidx+1
+            end
+            
+            --Rule SB12
+            cidx = nidx
+        until true
+    end
+end end
+
+function export.Sentences ( ustr )
+    local sidx = 1
+    return function ( )
+        local ret_str, nidx = export.GetSentence( ustr, sidx )
         sidx = nidx
         return ret_str
     end

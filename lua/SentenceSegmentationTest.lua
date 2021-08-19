@@ -5,7 +5,7 @@ local TS = require "us4l.TextSegmentation"
 local mul_sign, div_sign = U[[\N{MULTIPLICATION SIGN}]]:ToUtf8(), U[[\N{DIVISION_SIGN}]]:ToUtf8()
 
 local line_num = 0
-for line in io.lines( [[..\UCD\auxiliary\WordBreakTest.txt]] ) do
+for line in io.lines( [[..\UCD\auxiliary\SentenceBreakTest.txt]] ) do
     line_num = line_num + 1
 
     --Discard comment-only lines
@@ -36,8 +36,8 @@ for line in io.lines( [[..\UCD\auxiliary\WordBreakTest.txt]] ) do
             end
 
             local out_seqs = {}
-            for word in TS.Words( in_line ) do
-                out_seqs[ #out_seqs+1 ] = word
+            for sentence in TS.Sentences( in_line ) do
+                out_seqs[ #out_seqs+1 ] = sentence
             end
 
             for i = 1, math.max( #seqs, #out_seqs ) do
@@ -46,20 +46,21 @@ for line in io.lines( [[..\UCD\auxiliary\WordBreakTest.txt]] ) do
                     print( string.format( "Failed test from line #%i:", line_num ) )
                     print( "  Input string:" )
                     print( "      " .. in_line:PrettyPrint():gsub( "\n", "\n      " ) )
-                    print( "  Expected words:" )
+                    print( "  Expected sentences:" )
                     for i,str in ipairs( seqs ) do
-                        print( string.format( "    Word #%i:", i ) )
+                        print( string.format( "    Sentence #%i:", i ) )
                         print( "      " .. str:PrettyPrint():gsub( "\n", "\n      " ) )
                     end
-                    print( "  Output words:" )
+                    print( "  Output sentences:" )
                     for i,str in ipairs( out_seqs ) do
-                        print( string.format( "    Word #%i:", i ) )
+                        print( string.format( "    Sentence #%i:", i ) )
                         print( "      " .. str:PrettyPrint():gsub( "\n", "\n      " ) )
                     end
                     print( ("="):rep(10) )
                     print()
                     break
                 end
+                print( string.format( "Passed test from line #%i", line_num ) )
             end
         until true
     end

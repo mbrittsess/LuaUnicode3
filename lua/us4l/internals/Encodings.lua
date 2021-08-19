@@ -49,7 +49,7 @@ end
 --[[==============
     UTF-8 HANDLING
     ==============]]
---[[Decoding with replacement is so complex that it's handled the same in all versions of Lua, so the code ins't in either branch of the
+--[[Decoding with replacement is so complex that it's handled the same in all versions of Lua, so the code isn't in either branch of the
 if-statement below]]
 local UTF8 = {}
 if LuaVersion == "Lua53" then
