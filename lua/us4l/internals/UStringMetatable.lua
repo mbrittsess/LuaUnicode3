@@ -94,6 +94,7 @@ function umeta.__tostring ( ustr )
     return ustr:ToUtf8()
 end
 
+--[=[
 --[[    __lt metamethod
     Implements a simple binary sort. UTF-16 binary sorts and proper Unicode collation are available through library functions.]]
 do
@@ -117,6 +118,7 @@ function umeta.__lt ( left, right )
         return false
     end
 end end
+--]=]
 
 --[[    __index metamethod]]
 umeta.__index = ustr_methods

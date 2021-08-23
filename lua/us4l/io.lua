@@ -48,4 +48,8 @@ export.stdin = nil
 export.stdout = nil
 export.stderr = nil
 
+function export.GuessEncoding ( filename )
+    NotImplementedYet()
+end
+
 return export
