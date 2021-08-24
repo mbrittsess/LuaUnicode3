@@ -237,4 +237,5 @@ return {
     [ "expandsonnfkc" ] = "expandsonnfkc";
     [ "xonfkd" ] = "expandsonnfkd";
     [ "expandsonnfkd" ] = "expandsonnfkd";
+    [ "prependedconcatenationmark" ] = "prependedconcatenationmark";
 }
