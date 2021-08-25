@@ -1,27 +1,20 @@
-return {
-    asciihexdigit = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+local BasicBoolean = {
+    [ [[n]] ] = false;
+    [ [[no]] ] = false;
+    [ [[f]] ] = false;
+    [ [[false]] ] = false;
+    [ [[y]] ] = true;
+    [ [[yes]] ] = true;
+    [ [[t]] ] = true;
+    [ [[true]] ] = true;
+}
+
+return = {
+    asciihexdigit = BasicBoolean;
     age = {
         [ [[na]] ] = [[unassigned]];
     };
-    alphabetic = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    alphabetic = BasicBoolean;
     bidiclass = {
         [ [[al]] ] = [[arabicletter]];
         [ [[an]] ] = [[arabicnumber]];
@@ -47,26 +40,8 @@ return {
         [ [[s]] ] = [[segmentseparator]];
         [ [[ws]] ] = [[whitespace]];
     };
-    bidicontrol = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    bidimirrored = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    bidicontrol = BasicBoolean;
+    bidimirrored = BasicBoolean;
     bidipairedbrackettype = {
         [ [[c]] ] = [[close]];
         [ [[n]] ] = [[none]];
@@ -208,106 +183,16 @@ return {
         [ [[da]] ] = [[doubleabove]];
         [ [[]] ] = [[iotasubscript]];
     };
-    caseignorable = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    cased = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    changeswhencasefolded = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    changeswhencasemapped = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    changeswhenlowercased = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    changeswhennfkccasefolded = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    changeswhentitlecased = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    changeswhenuppercased = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    compositionexclusion = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    dash = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    caseignorable = BasicBoolean;
+    cased = BasicBoolean;
+    changeswhencasefolded = BasicBoolean;
+    changeswhencasemapped = BasicBoolean;
+    changeswhenlowercased = BasicBoolean;
+    changeswhennfkccasefolded = BasicBoolean;
+    changeswhentitlecased = BasicBoolean;
+    changeswhenuppercased = BasicBoolean;
+    compositionexclusion = BasicBoolean;
+    dash = BasicBoolean;
     decompositiontype = {
         [ [[can]] ] = [[canonical]];
         [ [[com]] ] = [[compat]];
@@ -324,36 +209,9 @@ return {
         [ [[sup]] ] = [[super]];
         [ [[vert]] ] = [[vertical]];
     };
-    defaultignorablecodepoint = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    deprecated = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    diacritic = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    defaultignorablecodepoint = BasicBoolean;
+    deprecated = BasicBoolean;
+    diacritic = BasicBoolean;
     eastasianwidth = {
         [ [[a]] ] = [[ambiguous]];
         [ [[f]] ] = [[fullwidth]];
@@ -362,66 +220,12 @@ return {
         [ [[na]] ] = [[narrow]];
         [ [[w]] ] = [[wide]];
     };
-    expandsonnfc = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    expandsonnfd = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    expandsonnfkc = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    expandsonnfkd = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    extender = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    fullcompositionexclusion = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    expandsonnfc = BasicBoolean;
+    expandsonnfd = BasicBoolean;
+    expandsonnfkc = BasicBoolean;
+    expandsonnfkd = BasicBoolean;
+    extender = BasicBoolean;
+    fullcompositionexclusion = BasicBoolean;
     generalcategory = {
         [ [[c]] ] = [[other]];
         [ [[cc]] ] = [[control]];
@@ -466,16 +270,7 @@ return {
         [ [[zp]] ] = [[paragraphseparator]];
         [ [[zs]] ] = [[spaceseparator]];
     };
-    graphemebase = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    graphemebase = BasicBoolean;
     graphemeclusterbreak = {
         [ [[cn]] ] = [[control]];
         [ [[ex]] ] = [[extend]];
@@ -484,26 +279,8 @@ return {
         [ [[sm]] ] = [[spacingmark]];
         [ [[xx]] ] = [[other]];
     };
-    graphemeextend = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    graphemelink = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    graphemeextend = BasicBoolean;
+    graphemelink = BasicBoolean;
     hangulsyllabletype = {
         [ [[l]] ] = [[leadingjamo]];
         [ [[lv]] ] = [[lvsyllable]];
@@ -512,92 +289,20 @@ return {
         [ [[t]] ] = [[trailingjamo]];
         [ [[v]] ] = [[voweljamo]];
     };
-    hexdigit = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    hyphen = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    idsbinaryoperator = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    idstrinaryoperator = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    idcontinue = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    idstart = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    ideographic = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    hexdigit = BasicBoolean;
+    hyphen = BasicBoolean;
+    idsbinaryoperator = BasicBoolean;
+    idstrinaryoperator = BasicBoolean;
+    idcontinue = BasicBoolean;
+    idstart = BasicBoolean;
+    ideographic = BasicBoolean;
     indicmatracategory = {
     };
     indicsyllabiccategory = {
     };
     jamoshortname = {
     };
-    joincontrol = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    joincontrol = BasicBoolean;
     joininggroup = {
         [ [[tehmarbutagoal]] ] = [[hamzaonhehgoal]];
     };
@@ -647,36 +352,9 @@ return {
         [ [[xx]] ] = [[unknown]];
         [ [[zw]] ] = [[zwspace]];
     };
-    logicalorderexception = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    lowercase = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    math = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    logicalorderexception = BasicBoolean;
+    lowercase = BasicBoolean;
+    math = BasicBoolean;
     nfcquickcheck = {
         [ [[m]] ] = [[maybe]];
         [ [[n]] ] = false;
@@ -703,151 +381,25 @@ return {
         [ [[y]] ] = true;
         [ [[yes]] ] = true;
     };
-    noncharactercodepoint = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    noncharactercodepoint = BasicBoolean;
     numerictype = {
         [ [[de]] ] = [[decimal]];
         [ [[di]] ] = [[digit]];
         [ [[nu]] ] = [[numeric]];
     };
-    otheralphabetic = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    otherdefaultignorablecodepoint = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    othergraphemeextend = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    otheridcontinue = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    otheridstart = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    otherlowercase = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    othermath = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    otheruppercase = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    patternsyntax = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    patternwhitespace = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    quotationmark = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    radical = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    sterm = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    otheralphabetic = BasicBoolean;
+    otherdefaultignorablecodepoint = BasicBoolean;
+    othergraphemeextend = BasicBoolean;
+    otheridcontinue = BasicBoolean;
+    otheridstart = BasicBoolean;
+    otherlowercase = BasicBoolean;
+    othermath = BasicBoolean;
+    otheruppercase = BasicBoolean;
+    patternsyntax = BasicBoolean;
+    patternwhitespace = BasicBoolean;
+    quotationmark = BasicBoolean;
+    radical = BasicBoolean;
+    sterm = BasicBoolean;
     script = {
         [ [[aghb]] ] = [[caucasianalbanian]];
         [ [[arab]] ] = [[arabic]];
@@ -989,66 +541,12 @@ return {
         [ [[up]] ] = [[upper]];
         [ [[xx]] ] = [[other]];
     };
-    softdotted = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    terminalpunctuation = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    unifiedideograph = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    uppercase = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    variationselector = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    whitespace = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    softdotted = BasicBoolean;
+    terminalpunctuation = BasicBoolean;
+    unifiedideograph = BasicBoolean;
+    uppercase = BasicBoolean;
+    variationselector = BasicBoolean;
+    whitespace = BasicBoolean;
     wordbreak = {
         [ [[dq]] ] = [[doublequote]];
         [ [[ex]] ] = [[extendnumlet]];
@@ -1065,24 +563,6 @@ return {
         [ [[sq]] ] = [[singlequote]];
         [ [[xx]] ] = [[other]];
     };
-    xidcontinue = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
-    xidstart = {
-        [ [[n]] ] = false;
-        [ [[no]] ] = false;
-        [ [[f]] ] = false;
-        [ [[false]] ] = false;
-        [ [[y]] ] = true;
-        [ [[yes]] ] = true;
-        [ [[t]] ] = true;
-        [ [[true]] ] = true;
-    };
+    xidcontinue = BasicBoolean;
+    xidstart = BasicBoolean;
 }
