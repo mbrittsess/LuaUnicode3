@@ -1,5 +1,9 @@
 --us4l.io sub-module, equivalent to Lua's standard io module
 
+require "us4l"
+local MakeUString = require "us4l.internals.MakeUString"
+local LuaVersion = require "us4l.internals.LuaVersion"
+
 local export = {}
 
 local function NotImplementedYet ( ) return error "Not implemented yet" end
@@ -70,17 +74,20 @@ do
         if (params == nil) or (ParamsType=="table" and (params.Encoding == "UTF8" or params.Encoding == nil)) then
             NewParams = {
                 Encoding = "UTF8";
-                LineNormalization = true;
-                BomSkip = true;
+                SystemImplementation = false;
+                SkipBom = true;
                 BufferingMode = "line";
-                SystemLineHandling = true;
+                LineNormalization = true;
                 Decoding = "normal";
             }
+            if ParamsType=="table" and params.SystemImplementation == true then
+                NewParams.Decoding = "system"
+            end
         else
             NewParams = {
-                LineNormalization = true;
-                BomSkip = true;
+                SkipBom = true;
                 BufferingMode = "full";
+                LineNormalization = true;
                 Decoding = "normal";
             }
         end
@@ -88,9 +95,9 @@ do
         if params == nil then
             return NewParams
         elseif ParamsType == "table" then
-            local ExpectedEntriesList = { "Encoding", "LineNormalization", "BomSkip", "BufferingMode", "Decoding" }
+            local ExpectedEntriesList = { "Encoding", "SkipBom", "BufferingMode", "LineNormalization", "Decoding" }
             if NewParams.Encoding == "UTF8" then
-                ExpectedEntriesList[ #ExpectedEntriesList+1 ] = "SystemLineHandling"
+                ExpectedEntriesList[ #ExpectedEntriesList+1 ] = "SystemImplementation"
             end
             local ExpectedEntriesSet = MakeTrueSet( ExpectedEntriesList )
             for key, value in pairs( params ) do
@@ -98,7 +105,7 @@ do
                     NewParams[ key ] = value
                 else
                     local msg = "Problem in 'params': " .. ParamsTypeErrorMsg( key, value )
-                    if key == "SystemLineHandling" then
+                    if key == "SystemImplementation" then
                         msg = msg .. " (key 'SystemLineHandling' only allowed if key 'Encoding' is implicity or explicitly set to \"UTF8\")"
                     end
                     return nil, msg
@@ -136,9 +143,93 @@ do
             return nil, string.format("table expected, got '%s'", ParamsType)
         end
     end end
+    
+    --NAIVE READ METHODS
+    --These work using only :GetCharacter() and :UngetCharacter(), and perform no line normalization.
+    local function NaiveReadCharacters ( self, numchars )
+        local cp_list = {}
+        for i = 1, numchars do
+            cp_list[i] = self:GetCharacter()
+        end
+        return MakeUString( cp_list )
+    end
+    
+    local NewlineSet = MakeTrueSet{
+        0x000D, --CR
+        0x000A, --LF
+        0x2028, --LS
+        0x000C, --FF
+        0x2029  --PS
+    }
+    local CR, LF = 0x000D, 0x000A
+    local function NaiveReadLine ( self, include_term )
+        local cp_list = {}
+        local term = {}
+        
+        local cp = self:GetCharacter()
+        while cp and not NewlineSet[cp] do
+            cp_list[#cp_list+1] = cp
+        end
+        
+        if cp == CR then
+            local cp_next = self:GetCharacter()
+            if cp_next == LF then
+                term[1] = CR
+                term[2] = LF
+            elseif cp_next ~= nil then
+                self:UngetCharacter( cp_next )
+            end
+        else
+            term[1] = cp
+        end
+        
+        if include_term then
+            local ofs = #cp_list
+            for i = 1, #term do
+                cp_list[ ofs+i ] = term[i]
+            end
+        end
+        
+        return MakeUString( cp_list )
+    end
+    
+    local function NaiveReadLineWithTerminator ( self )
+        return NaiveReadLine( self, true )
+    end
+    
+    --Probably even our most naive implementations won't use this
+    local function NaiveReadAll ( self )
+        local cp_list = {}
+        
+        local cp = self:GetCharacter()
+        while cp do
+            cp_list[ #cp_list+1 ] = cp
+        end
+        
+        return MakeUString( cp_list )
+    end
+    --END NAIVE READ METHODS
 
 function export.openread ( filename, params )
-    local params = CheckOpenReadParams( params )
+    if type(filename) ~= "string" then
+        return error( string.format( "problem with argument 'filename': string expected, got '%s'", type(filename) ) )
+    end
+    
+    local object, params_err_msg = CheckOpenReadParams( params )
+    if not object then
+        return error( "problem with argument 'params': " .. params_err_msg )
+    end
+    
+    --Now to build up the object's fields and methods
+    local InternalFile --Will fill this in later
+    object.AtBeginning = true
+    if object.Encoding == "UTF8" then
+        if object.SystemImplementation then
+            --TODO
+        end
+    end
+    
+    object.InternalFile = InternalFile
     
     NotImplementedYet()
 end end
