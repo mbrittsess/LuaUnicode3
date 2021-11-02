@@ -8,7 +8,7 @@ TODO:
 * Implement support for reserved characters, private-use characters, and noncharacters
 * Ability to get/update library via LuaRocks
 * Continue to add thorough testing scripts
-* Implement UString:ToTitlecase()
+* [DONE] Implement UString:ToTitlecase()
 * Implement most of the original string methods from the Lua standard library
 * Finish implementing addition of all remaining character properties to the Master Table
 * Update Unicode support from 7.0 to the most recent version of Unicode
@@ -21,3 +21,5 @@ TODO:
   * Create our own clone of LuLPeg which operates over UStrings
 * Implement file I/O library
 * Implement string and character proxies support (via loading a us4l.UseProxies module loaded before any others) to allow use in sandboxed environments
+* Create pre-load configuration table mechanism
+* Unify exception-throwing mechanism, consistently throw rich error objects, with option to throw error messages only, based on Lua version and overrideable by configuration table

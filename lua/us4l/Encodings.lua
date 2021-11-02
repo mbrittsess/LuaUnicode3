@@ -36,7 +36,7 @@ for _, EncName in ipairs{ "UTF8", "UTF16LE", "UTF16BE", "UTF32LE", "UTF32BE" } d
     end
     
     local DecodeWholeStringWithReplacement = IntEncodings[ EncName ].DecodeWholeStringWithReplacement
-    export[ EncName ].DecodeStringWithReplacement ( str )
+    export[ EncName ].DecodeStringWithReplacement = function ( str )
         return MakeUString( str )
     end
     

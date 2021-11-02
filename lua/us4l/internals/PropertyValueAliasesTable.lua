@@ -9,7 +9,7 @@ local BasicBoolean = {
     [ [[true]] ] = true;
 }
 
-return = {
+return {
     asciihexdigit = BasicBoolean;
     age = {
         [ [[na]] ] = [[unassigned]];
