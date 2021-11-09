@@ -299,7 +299,7 @@ function export.NewSkipBomHandler ( GetCharacterFromFile )
     --TODO: Give explanation of function to beginner Lua people
     local function ret_func ( )
         local ret_char = GetCharacterFromFile()
-        ret_func = function ( ) return GetCharacterFromFile() end
+        ret_func = GetCharacterFromFile
         if ret_char == 0xFEFF then
             return ret_func()
         else
