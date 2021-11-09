@@ -79,7 +79,7 @@ do
     do
         local EncodingAllowedSet = MakeTrueSet{ "UTF8", "UTF16LE", "UTF16BE", "UTF32LE", "UTF32BE" }
         local BufferingModeAllowedSet = MakeTrueSet{ "no", "full", "line" }
-        local DecodingMethodAllowedSet = MakeTrueSet{ "normal", "replacement", "system" }
+        local DecodingMethodAllowedSet = MakeTrueSet{ "normal", "replace", "system" }
         local function ParamsTypeErrorMsg ( key, value )
             local keytype = type(key)
             local valtype = type(value)

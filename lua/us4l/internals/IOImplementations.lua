@@ -1,6 +1,3 @@
---[[TODO: All layers of the read functions should check if lower layers have returned nil to them (signaling EOF) and just return EOF (in an
-appropriate manner) from then on instead of calling into lower layers.]]
-
 require "us4l"
 local MakeUString = require "us4l.internals.MakeUString"
 local LuaVersion = require "us4l.internals.LuaVersion"
@@ -12,6 +9,9 @@ local FIRST_HIGH_SURROGATE, LAST_HIGH_SURROGATE = 0xD800, 0xDBFF
 local FIRST_LOW_SURROGATE, LAST_LOW_SURROGATE = 0xDC00, 0xDFFF
 local FIRST_SURROGATE, LAST_SURROGATE = FIRST_HIGH_SURROGATE, LAST_LOW_SURROGATE
 local LAST_UNICODE_CHARACTER = 0x10FFFF
+
+local ipairs = ipairs
+local unpack = table.unpack or unpack
 
 local GetEmptyUString
 do
@@ -45,7 +45,7 @@ function export.NewGetCodeUnitFromFile ( UFile, file, Encoding )
         return function ( )
             local ret = file:read(1)
             if ret ~= nil then
-                ret = byte(ret)
+                return byte(ret)
             else
                 return nil
             end
@@ -127,16 +127,69 @@ end
 --Returnd function returns a code point, or nil on EOF. Malformed encodings might return U+FFFD REPLACEMENT CHARACTER or throw an exception,
 --depending on openread() parameters.
 do
-    local Utf16DecodeFunction = LuaVersion == [[Lua53]] and require( "us4l.internals.Utf16Decode53_temp" ) or function ( cu1, cu2 )
-        return    ( cu1 - FIRST_HIGH_SURROGATE )*2^10
-                + ( cu2 - FIRST_LOW_SURROGATE )
-                + 0x10000
-    end
+    local DecodeModule = require "us4l.internals.CodeUnits.Decode"
+    local Utf16DecodeFunction = DecodeModule.Utf16SurrogatePair
+    
+    local NewUtf8ReplaceGetCharacterFromFile
+    do
+        local MakeLeading, MakeNonFinalTrailing, FinalTrailing = DecodeModule.Utf8_NewFunc_Leading, DecodeModule.Utf8_NewFunc_NonFinalTrailing, DecodeModule.Utf8_FinalTrailing
+        local function FirstByteErrFunc ( gcu, ugcu, cu1 ) return REPLACEMENT_CHARACTER end
+        local FirstByteDispatch = { [0x00] = FirstByteErrFunc }
+        for i = 0x01, 0xFF do FirstByteDispatch[i] = FirstByteErrFunc end --Fill this out contiguously to make sure everything's in the array portion
+        
+        --One-byte handlers
+        local function Identity ( GetCodeUnit, UngetCodeUnit, cu1 )
+            return cu1
+        end
+        for i = 0x00, 0x7F do FirstByteDispatch[i] = Identity end
+        
+        --Two-byte handlers
+        local twobytefunc = MakeLeading( "ss0mmmmm", 6, FinalTrailing )
+        for i = 0xC2, 0xDF do FirstByteDispatch[i] = twobytefunc end
+        
+        --Three-byte handlers
+        for _, v in ipairs{ { 0xE0, 0xE0, 0xA0, 0xBF },
+                            { 0xE1, 0xEC, 0x80, 0xBF },
+                            { 0xED, 0xED, 0x80, 0x9F },
+                            { 0xEE, 0xEF, 0x80, 0xBF } }
+        do
+            local first_lo, first_hi, second_lo, second_hi = unpack(v)
+            local f = MakeLeading( "sss0mmmm", 12, MakeNonFinalTrailing( 6, FinalTrailing, second_lo, second_hi ) )
+            for i = first_lo, first_hi do
+                FirstByteDispatch[i] = f
+            end
+        end
+        
+        --Four-byte handlers
+        for _, v in ipairs{ { 0xF0, 0xF0, 0x90, 0xBF },
+                            { 0xF1, 0xF3, 0x80, 0xBF },
+                            { 0xF4, 0xF4, 0x80, 0x8F }}
+        do
+            local first_lo, first_hi, second_lo, second_hi = unpack(v)
+            local f = MakeLeading( "ssss0mmm", 18, MakeNonFinalTrailing( 12, MakeNonFinalTrailing( 6, FinalTrailing ), second_lo, second_hi ) )
+            for i = first_lo, first_hi do
+                FirstByteDispatch[i] = f
+            end
+        end
+    function NewUtf8ReplaceGetCharacterFromFile ( GetCodeUnit, UngetCodeUnit )
+        return function ( )
+            local cu1 = GetCodeUnit()
+            if cu1 == nil then
+                return nil
+            else
+                return FirstByteDispatch[cu1]( GetCodeUnit, UngetCodeUnit, cu1 )
+            end
+        end
+    end end
 function export.NewGetCharacterFromFile ( UFile, Encoding, DecodingMethod, GetCodeUnit, UngetCodeUnit )
     --TODO
     
     if     Encoding == "UTF8" then
-        error( "not implemented" )
+        if DecodingMethod == "normal" then
+            error( "not implemented" )
+        elseif DecodingMethod == "replace" then
+            return NewUtf8ReplaceGetCharacterFromFile( GetCodeUnit, UngetCodeUnit )
+        end
     elseif Encoding == "UTF16LE" or Encoding == "UTF16BE" then
         if DecodingMethod == "normal" then
             return function ( )
@@ -303,6 +356,36 @@ end end
 do
     local CR, LF, NEL, FF, LS, PS = 0x000D, 0x000A, 0x0085, 0x000C, 0x2028, 0x2029
     local IsNewline = MakeTrueSet{ CR, LF, NEL, FF, LS, PS }
+    
+    --Used by readnumber()
+    local HT, VT, SP = 0x0009, 0x000B, 0x0020
+    local IsWhitespace = MakeTrueSet{ HT, LF, VT, FF, CR, SP }
+        --All supported newlines have to be supported as whitespace too
+        for cp in pairs( IsNewline ) do IsWhitespace[ cp ] = true end
+    local PLUS, MINUS, e, E, p, P, x, X, ZERO, POINT = ("+-eEpPxX0."):byte(1,-1)
+    local IsDigit = MakeTrueSet{ ("0123456789"):byte(1,-1) }
+    local IsHexDigit = MakeTrueSet{ ("0123456789abcdefABCDEF"):byte(1,-1) }
+    local DecDigVal, HexDigVal = {}, {}
+    for char in ("0123456789"):gmatch(".") do
+        DecDigVal[ char:byte() ] = tonumber( char, 10 )
+    end
+    for char in ("0123456789abcdefABCDEF"):gmatch(".") do
+        HexDigVal[ char:byte() ] = tonumber( char, 16 )
+    end
+    local function convert_decdigs ( digs )
+        local ret = 0.0
+        for _, dig in ipairs( digs ) do
+            ret = ( ret * 10.0 ) + DecDigVal[ dig ]
+        end
+        return ret
+    end
+    local function convert_hexdigs ( digs )
+        local ret = 0.0
+        for _, dig in ipairs( digs ) do
+            ret = ( ret * 16.0 ) + HexDigVal[ dig ]
+        end
+        return ret
+    end
 function export.NewBaseReadSubfunctions( UFile, GetCharacter, UngetCharacter ) --Must return readall(), readcharacters(n:integer), readline(include_newline:boolean), readnumber()
     --All functions assume that file is not yet closed, although it might be EOF
     --All functions return a boolean (indicating success or failure) and their actual result
@@ -385,9 +468,259 @@ function export.NewBaseReadSubfunctions( UFile, GetCharacter, UngetCharacter ) -
         end
     end
     
+    --As with regular Lua, follows implementation of strtod() minus support for INF or NAN
+    --Note: it always supports hex floats
     local function readnumber ( )
-        --TODO
-        error "not implemented"
+        local skipwhitespace, readsign, readprefix, readdecintdigs, readhexintdigs,
+            readdecfracdigs, readhexfracdigs, readdecexpsign, readhexexpsign,
+            readexpdigs
+        
+        function skipwhitespace ( )
+            local cp = GetCharacter()
+            while true do
+                if cp == nil then --EOF
+                    return nil, nil, nil, nil, nil, nil
+                elseif not IsWhitespace[ cp ] then
+                    UngetCharacter( cp )
+                    return readsign()
+                else
+                    cp = GetCharacter()
+                end
+            end
+        end
+        
+        function readsign ( )
+            local cp = GetCharacter()
+            if cp == nil then --EOF
+                return nil, nil, nil, nil, nil, nil
+            elseif cp == PLUS or cp == MINUS then
+                return cp, readprefix()
+            else
+                UngetCharacter( cp )
+                return nil, readprefix()
+            end
+        end
+        
+        function readprefix ( )
+            local c1 = GetCharacter()
+            if c1 == nil then --EOF
+                return nil, nil, nil, nil, nil
+            elseif c1 == ZERO then
+                local c2 = GetCharacter()
+                if c2 == x or c2 == X then
+                    return {c1, c2}, readhexintdigs()
+                else
+                    UngetCharacter( c2 )
+                end
+            end
+            UngetCharacter( c1 )
+            return nil, readdecintdigs()
+        end
+        
+        function readdecintdigs ( )
+            local cp = GetCharacter()
+            if cp ==  nil then
+                return nil, nil, nil, nil
+            elseif IsDigit[ cp ] then
+                local ret = { cp }
+                while true do
+                    cp = GetCharacter()
+                    if cp == nil then
+                        return ret, nil, nil, nil
+                    elseif IsDigit[ cp ] then
+                        ret[ #ret+1 ] = cp
+                    else
+                        UngetCharacter( cp )
+                        return ret, readdecfracdigs( false )
+                    end
+                end
+            else
+                UngetCharacter( cp )
+                return nil, readdecfracdigs( true )
+            end
+        end
+        
+        function readhexintdigs ( )
+            local cp = GetCharacter()
+            if cp ==  nil then
+                return nil, nil, nil, nil
+            elseif IsHexDigit[ cp ] then
+                local ret = { cp }
+                while true do
+                    cp = GetCharacter()
+                    if cp == nil then
+                        return ret, nil, nil, nil
+                    elseif IsHexDigit[ cp ] then
+                        ret[ #ret+1 ] = cp
+                    else
+                        UngetCharacter( cp )
+                        return ret, readhexfracdigs( false )
+                    end
+                end
+            else
+                UngetCharacter( cp )
+                return nil, readhexfracdigs( true )
+            end
+        end
+        
+        function readdecfracdigs ( digits_required )
+            local cp = GetCharacter()
+            if cp == nil then
+                return nil, nil, nil
+            elseif cp == POINT then
+                local ret = {}
+                while true do
+                    cp = GetCharacter()
+                    if cp == nil then
+                        if digits_required and #ret == 0 then
+                            return nil, nil, nil
+                        else
+                            return ret, nil, nil
+                        end
+                    elseif IsDigit[ cp ] then
+                        ret[ #ret+1 ] = cp
+                    else
+                        UngetCharacter( cp )
+                        if digits_required and #ret == 0 then
+                            return nil, nil, nil
+                        else
+                            return ret, readdecexpsign()
+                        end
+                    end
+                end
+            else
+                UngetCharacter( cp )
+                if digits_required then
+                    return nil, nil, nil
+                else
+                    return nil, readdecexpsign()
+                end
+            end
+        end
+        
+        function readhexfracdigs ( digits_required )
+            local cp = GetCharacter()
+            if cp == nil then
+                return nil, nil, nil
+            elseif cp == POINT then
+                local ret = {}
+                while true do
+                    cp = GetCharacter()
+                    if cp == nil then
+                        if digits_required and #ret == 0 then
+                            return nil, nil, nil
+                        else
+                            return ret, nil, nil
+                        end
+                    elseif IsHexDigit[ cp ] then
+                        ret[ #ret+1 ] = cp
+                    else
+                        UngetCharacter( cp )
+                        if digits_required and #ret == 0 then
+                            return nil, nil, nil
+                        else
+                            return ret, readhexexpsign()
+                        end
+                    end
+                end
+            else
+                UngetCharacter( cp )
+                if digits_required then
+                    return nil, nil, nil
+                else
+                    return nil, readhexexpsign()
+                end
+            end
+        end
+        
+        function readdecexpsign ( )
+            local c1 = GetCharacter()
+            if c1 == nil then
+                return nil, nil
+            elseif c1 == e or c1 == E then
+                local c2 = GetCharacter()
+                if c2 == PLUS or c2 == MINUS then
+                    return { c1, c2 }, readexpdigs()
+                elseif c2 ~= nil then
+                    UngetCharacter( c2 )
+                end
+                return { c1 }, readexpdigs()
+            else
+                UngetCharacter( c1 )
+                return nil, readexpdigs()
+            end
+        end
+        
+        function readhexexpsign ( )
+            local c1 = GetCharacter()
+            if c1 == nil then
+                return nil, nil
+            elseif c1 == p or c1 == P then
+                local c2 = GetCharacter()
+                if c2 == PLUS or c2 == MINUS then
+                    return { c1, c2 }, readexpdigs()
+                elseif c2 ~= nil then
+                    UngetCharacter( c2 )
+                end
+                return { c1 }, readexpdigs()
+            else
+                UngetCharacter( c1 )
+                return nil, readexpdigs()
+            end
+        end
+        
+        function readexpdigs ( )
+            local cp = GetCharacter()
+            if cp ==  nil then
+                return nil
+            elseif IsDigit[ cp ] then
+                local ret = { cp }
+                while true do
+                    cp = GetCharacter()
+                    if cp == nil then
+                        return ret
+                    elseif IsDigit[ cp ] then
+                        ret[ #ret+1 ] = cp
+                    else
+                        UngetCharacter( cp )
+                        return ret
+                    end
+                end
+            else
+                UngetCharacter( cp )
+                return nil
+            end
+        end
+        
+        local sign, prefix, intdigs, fracdigs, expsign, expdigs = skipwhitespace()
+        
+        --Invalid prefix
+        if expsign and not expdigs then
+            return false
+        end
+        
+        local some_intdigs = intdigs ~= nil
+        local some_fracdigs = fracdigs ~= nil and #fracdigs > 0
+        if not ( some_intdigs or some_fracdigs ) then
+            return false
+        end
+        
+        --At this point, we have a valid number
+        local base = prefix and 16 or 10
+        local expbase = prefix and 2 or 10
+        local convert_digs = prefix and convert_hexdigs or convert_decdigs
+        local intval = some_intdigs and convert_digs( intdigs ) or 0.0
+        local fracval = some_fracdigs and (convert_digs( fracdigs ) * base^(-#fracdigs)) or 0.0
+        local retval = intval + fracval
+        if expdigs then
+            local expval = convert_decdigs( expdigs )
+            if expsign[2] == MINUS then
+                expval = -expval
+            end
+            retval = retval * expbase^expval
+        end
+        
+        return true, retval
     end
     
     return readall, readcharacters, readline, readnumber
