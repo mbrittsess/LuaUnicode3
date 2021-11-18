@@ -182,11 +182,67 @@ do
         end
     end end
 function export.NewGetCharacterFromFile ( UFile, Encoding, DecodingMethod, GetCodeUnit, UngetCodeUnit )
-    --TODO
-    
     if     Encoding == "UTF8" then
         if DecodingMethod == "normal" then
-            error( "not implemented" )
+            local Decode2, Decode3, Decode4 = DecodeModule.Utf8_2, DecodeModule.Utf8_3, DecodeModule.Utf8_4
+            
+            local function IsValidTrailing ( cu )
+                return 0x80 <= cu and cu <= 0xBF
+            end
+            
+            --TODO: Consider moving to a table-based dispatch like we use in the "replace" decoding method?
+            return function ( )
+                local cp, min_cp = nil, nil
+                local cu1 = GetCodeUnit()
+                
+                if not cu1 then
+                    return nil
+                elseif cu1 <= 0x7F then --Single-byte sequence
+                    return cu1
+                elseif 0xC0 <= cu1 and cu1 <= 0xDF then --Two-byte sequence
+                    local cu2 = GetCodeUnit()
+                    if not cu2 then
+                        error "UTF-8 read error: incomplete sequence"
+                    elseif not IsValidTrailing( cu2 ) then
+                        error "UTF-8 read error: invalid trailing byte"
+                    else
+                        cp = Decode2( cu1, cu2 )
+                        min_cp = 0x0080
+                    end
+                elseif 0xE0 <= cu1 and cu1 <= 0xEF then --Three-byte sequence
+                    local cu2, cu3 = GetCodeUnit(), GetCodeUnit()
+                    if not ( cu2 and cu3 ) then
+                        error "UTF-8 read error: incomplete sequence"
+                    elseif not ( IsValidTrailing( cu2 ) and IsValidTrailing( cu3 ) ) then
+                        error "UTF-8 read error: invalid trailing byte"
+                    else
+                        cp = Decode3( cu1, cu2, cu3 )
+                        min_cp = 0x0800
+                    end
+                elseif 0xF0 <= cu1 and cu1 <= 0xF7 then --Four-byte sequence
+                    local cu2, cu3, cu4 = GetCodeUnit(), GetCodeUnit(), GetCodeUnit()
+                    if not ( cu2 and cu3 and cu4 ) then
+                        error "UTF-8 read error: incomplete sequence"
+                    elseif not ( IsValidTrailing( cu2 ) and IsValidTrailing( cu3 ) and IsValidTrailing( cu4 ) ) then
+                        error "UTF-8 read error: invalid trailing byte"
+                    else
+                        cp = Decode4( cu1, cu2, cu3, cu4 )
+                        min_cp = 0x10000
+                    end
+                else
+                    error "UTF-8 read error: invalid leading byte"
+                end
+                
+                if FIRST_HIGH_SURROGATE <= cp and cp <= LAST_LOW_SURROGATE then
+                    error "UTF-8 read error: encoded surrogate"
+                elseif LAST_UNICODE_CHARACTER < cp then
+                    error "UTF-8 read error: code point not in Unicode repertoire"
+                elseif cp < min_cp then
+                    error "UTF-8 read error: not in shortest-form representation"
+                else
+                    return cp
+                end
+            end
         elseif DecodingMethod == "replace" then
             return NewUtf8ReplaceGetCharacterFromFile( GetCodeUnit, UngetCodeUnit )
         end

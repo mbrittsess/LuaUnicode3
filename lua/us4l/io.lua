@@ -278,8 +278,6 @@ function export.openread ( filename, params )
     --Used for debugging
     UFile.InternalFile = file
     
-    --NotImplementedYet()
-    
     return setmetatable( UFile, UReadFileMeta )
 end end
 
