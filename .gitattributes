@@ -3,3 +3,6 @@ lua/us4l/internals/PropertyValueAliasesTable.lua linguist-generated
 lua/us4l/internals/NamedSequencesTable.lua linguist-generated
 lua/us4l/internals/MasterTable/Init_Plane*.lua linguist-generated
 lua/us4l/internals/MasterTable/InitAllChunks.lua linguist-generated
+UCD/** linguist-vendored
+UCA/** linguist-vendored
+Unihan/** linguist-vendored
