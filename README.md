@@ -4,7 +4,7 @@ Comprehensive Unicode library for Lua
 Project is still seriously in-progress; this readme will keep track of my list of what still needs to be implemented.
 
 TODO:
-* Move the 8-bit XOR table used by FnvHash51.lua to its own file and mark it linguist-generated, update Generate8BitXorTable.ps1 to generate said file directly
+* [DONE] Move the 8-bit XOR table used by FnvHash51.lua to its own file and mark it linguist-generated, update Generate8BitXorTable.ps1 to generate said file directly
 * Provide thorough documentation and manual in several formats
 * Implement support for reserved characters, private-use characters, and noncharacters
 * Ability to get/update library via LuaRocks
